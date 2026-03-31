@@ -34,6 +34,9 @@ class SeagullBadgesCard extends HTMLElement {
     this._hass = hass;
     if (!this._card) {
       this._card = document.createElement("ha-card");
+      this._card.style.background = "transparent";
+      this._card.style.boxShadow = "none";
+      this._card.style.border = "none";
       this.appendChild(this._card);
     }
 
@@ -93,7 +96,6 @@ class SeagullBadgesCard extends HTMLElement {
           min-width: 0;
           position: relative;
           border-radius: 9999px;
-          border: 1px solid color-mix(in srgb, var(--divider-color) 60%, transparent);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -101,18 +103,18 @@ class SeagullBadgesCard extends HTMLElement {
           overflow: hidden;
         }
         .sg-circle {
-          width: 40px;
-          height: 40px;
+          width: 52px;
+          height: 52px;
           margin: 0 auto;
         }
         .sg-pill {
-          min-height: 40px;
-          padding: 6px 12px;
+          min-height: 52px;
+          padding: 8px 14px;
           justify-content: flex-start;
         }
         .sg-icon-bg {
-          width: 28px;
-          height: 28px;
+          width: 38px;
+          height: 38px;
           border-radius: 9999px;
           display: inline-flex;
           align-items: center;
@@ -120,7 +122,12 @@ class SeagullBadgesCard extends HTMLElement {
           flex: 0 0 auto;
         }
         .sg-icon {
-          --mdc-icon-size: 18px;
+          --mdc-icon-size: 24px;
+        }
+        .sg-text-bg {
+          border-radius: 9999px;
+          padding: 6px 10px;
+          min-width: 0;
         }
         .sg-text {
           min-width: 0;
@@ -180,9 +187,11 @@ class SeagullBadgesCard extends HTMLElement {
     }
 
     const textHtml = hasTitle || hasSubtitle
-      ? `<div class="sg-text ${hasTitle && hasSubtitle ? "" : "sg-single"}">
-           ${hasTitle ? `<div class="sg-title">${this._esc(item.title)}</div>` : ""}
-           ${hasSubtitle ? `<div class="sg-subtitle">${this._esc(item.subtitle)}</div>` : ""}
+      ? `<div class="sg-text-bg" style="background:${this._withAlpha(item.iconColor, 0.14)};">
+           <div class="sg-text ${hasTitle && hasSubtitle ? "" : "sg-single"}">
+             ${hasTitle ? `<div class="sg-title">${this._esc(item.title)}</div>` : ""}
+             ${hasSubtitle ? `<div class="sg-subtitle">${this._esc(item.subtitle)}</div>` : ""}
+           </div>
          </div>`
       : "";
 
