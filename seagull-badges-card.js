@@ -7,11 +7,11 @@ class SeagullBadgesCard extends HTMLElement {
           entity: "sun.sun",
           show: "{{ true }}",
           icon: "mdi:weather-sunny",
-          icon_color: "{{ states(entity) === 'above_horizon' ? '#f59e0b' : '#4b5563' }}",
+          color: "{{ states(entity) === 'above_horizon' ? '#f59e0b' : '#4b5563' }}",
           title: "{{ states(entity) === 'above_horizon' ? 'Day' : 'Night' }}",
           subtitle: "{{ states(entity) }}",
-          extra_icon: "mdi:check-circle",
-          extra_icon_color: "#16a34a"
+          badge: "mdi:check-circle",
+          badge_color: "#16a34a"
         }
       ]
     };
@@ -46,6 +46,17 @@ class SeagullBadgesCard extends HTMLElement {
       .map((badge) => this._normalizeBadge(badge));
 
     this._card.innerHTML = this._render(visible);
+
+    visible.forEach((item, index) => {
+      const el = this._card.querySelector(`[data-sg-id="sg-${index}"]`);
+      if (!el) return;
+      const handlers = this._wireActions(item);
+      el.addEventListener("pointerdown", handlers.onPointerDown);
+      el.addEventListener("pointerup", handlers.onPointerUp);
+      el.addEventListener("pointerleave", handlers.onPointerLeave);
+      el.addEventListener("click", handlers.onClick);
+      el.addEventListener("dblclick", handlers.onDblClick);
+    });
   }
 
   _normalizeBadge(badge) {
@@ -56,21 +67,25 @@ class SeagullBadgesCard extends HTMLElement {
       badge,
       stateObj?.attributes?.icon || "mdi:information-outline"
     );
-    const iconColor = this._tpl(badge.icon_color, badge, "#4b5563");
+    const iconColor = this._tpl(badge.color ?? badge.icon_color, badge, "#4b5563");
 
     const title = this._tpl(badge.title, badge, "");
     const subtitle = this._tpl(badge.subtitle, badge, "");
 
-    const extraIcon = this._tpl(badge.extra_icon, badge, "");
-    const extraIconColor = this._tpl(badge.extra_icon_color, badge, "#6b7280");
+    const extraIcon = this._tpl(badge.badge ?? badge.extra_icon, badge, "");
+    const extraIconColor = this._tpl(badge.badge_color ?? badge.extra_icon_color, badge, "#6b7280");
 
     return {
+      entity: badge.entity || "",
       icon,
       iconColor,
       title: this._str(title),
       subtitle: this._str(subtitle),
       extraIcon,
       extraIconColor,
+      tap_action: badge.tap_action ?? { action: "more-info" },
+      double_tap_action: badge.double_tap_action ?? { action: "none" },
+      hold_action: badge.hold_action ?? { action: "none" },
     };
   }
 
@@ -82,7 +97,7 @@ class SeagullBadgesCard extends HTMLElement {
     const gap = Number(this._config.gap) || 10;
     const padding = Number(this._config.padding) || 10;
 
-    const badgesHtml = items.map((item) => this._renderBadge(item)).join("");
+    const badgesHtml = items.map((item, index) => this._renderBadge(item, index)).join("");
 
     return `
       <style>
@@ -180,7 +195,7 @@ class SeagullBadgesCard extends HTMLElement {
     `;
   }
 
-  _renderBadge(item) {
+  _renderBadge(item, index) {
     const hasTitle = !!item.title;
     const hasSubtitle = !!item.subtitle;
     const isCircle = !!item.icon && !hasTitle && !hasSubtitle;
@@ -197,9 +212,11 @@ class SeagullBadgesCard extends HTMLElement {
       ? `<ha-icon class="sg-extra" style="color:${item.extraIconColor}" icon="${this._esc(item.extraIcon)}"></ha-icon>`
       : "";
 
+    const id = `sg-${index}`;
+
     if (isCircle) {
       return `
-        <div class="sg-item sg-circle">
+        <div class="sg-item sg-circle" data-sg-id="${id}">
           ${iconHtml}
           ${extraIconHtml}
         </div>
@@ -214,12 +231,76 @@ class SeagullBadgesCard extends HTMLElement {
       : "";
 
     return `
-      <div class="sg-item sg-pill ${item.icon ? "" : "sg-text-only"}" style="background:${this._withAlpha(item.iconColor, 0.14)};">
+      <div class="sg-item sg-pill ${item.icon ? "" : "sg-text-only"}" data-sg-id="${id}" style="background:${this._withAlpha(item.iconColor, 0.14)};">
         ${iconHtml}
         ${textHtml}
         ${extraIconHtml}
       </div>
     `;
+  }
+
+
+  _actionName(actionCfg, defaultAction) {
+    if (!actionCfg) return defaultAction;
+    if (typeof actionCfg === "string") return actionCfg;
+    if (typeof actionCfg === "object" && actionCfg.action) return String(actionCfg.action);
+    return defaultAction;
+  }
+
+  _runAction(item, actionCfg, defaultAction) {
+    const action = this._actionName(actionCfg, defaultAction);
+    if (action === "none" || action === "nothing") return;
+
+    if (action === "more-info") {
+      if (!item.entity) return;
+      this.dispatchEvent(new CustomEvent("hass-more-info", {
+        bubbles: true,
+        composed: true,
+        detail: { entityId: item.entity }
+      }));
+      return;
+    }
+
+    // unsupported custom actions for now: safely no-op
+  }
+
+  _wireActions(item) {
+    const tapDelayMs = 220;
+    let holdTimer = null;
+    let holdFired = false;
+    let tapTimer = null;
+
+    return {
+      onPointerDown: () => {
+        holdFired = false;
+        clearTimeout(holdTimer);
+        holdTimer = setTimeout(() => {
+          holdFired = true;
+          this._runAction(item, item.hold_action, "none");
+        }, 500);
+      },
+      onPointerUp: () => {
+        clearTimeout(holdTimer);
+      },
+      onPointerLeave: () => {
+        clearTimeout(holdTimer);
+      },
+      onClick: (ev) => {
+        if (holdFired) {
+          ev.preventDefault();
+          return;
+        }
+        clearTimeout(tapTimer);
+        tapTimer = setTimeout(() => {
+          this._runAction(item, item.tap_action, "more-info");
+        }, tapDelayMs);
+      },
+      onDblClick: (ev) => {
+        ev.preventDefault();
+        clearTimeout(tapTimer);
+        this._runAction(item, item.double_tap_action, "none");
+      },
+    };
   }
 
   _tpl(value, badge, fallback = "") {

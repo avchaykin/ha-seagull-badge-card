@@ -21,11 +21,11 @@ badges:
   - entity: sun.sun
     show: "{{ true }}"
     icon: mdi:weather-sunny
-    icon_color: "{{ states(entity) === 'above_horizon' ? '#f59e0b' : '#4b5563' }}"
+    color: "{{ states(entity) === 'above_horizon' ? '#f59e0b' : '#4b5563' }}"
     title: "{{ states(entity) === 'above_horizon' ? 'Day' : 'Night' }}"
     subtitle: "{{ states(entity) }}"
-    extra_icon: mdi:check-circle
-    extra_icon_color: '#16a34a'
+    badge: mdi:check-circle
+    badge_color: '#16a34a'
 ```
 
 ## Badge fields
@@ -33,11 +33,14 @@ badges:
 - `entity` — entity id used inside templates (`entity` variable)
 - `show` — template/boolean; if false badge is hidden
 - `icon` — left icon (mdi)
-- `icon_color` — template/string; default `#4b5563`
+- `color` — template/string; default `#4b5563`
 - `title` — template/string
 - `subtitle` — template/string
-- `extra_icon` — optional small icon in top-right corner
-- `extra_icon_color` — template/string for extra icon color
+- `badge` — optional small icon in top-right corner
+- `badge_color` — template/string for badge icon color
+- `tap_action` — click action (default: `more-info`)
+- `double_tap_action` — double click action (default: `none`)
+- `hold_action` — hold action (default: `none`)
 
 ### Templates
 
