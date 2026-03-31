@@ -5,11 +5,11 @@ class SeagullBadgesCard extends HTMLElement {
       badges: [
         {
           entity: "sun.sun",
-          show: "[[[ return true ]]]",
+          show: "{{ true }}",
           icon: "mdi:weather-sunny",
-          icon_color: "[[[ return entity?.state === 'above_horizon' ? '#f59e0b' : '#4b5563' ]]]",
-          title: "[[[ return entity?.state === 'above_horizon' ? 'Day' : 'Night' ]]]",
-          subtitle: "[[[ return entity?.state ]]]",
+          icon_color: "{{ states(entity) === 'above_horizon' ? '#f59e0b' : '#4b5563' }}",
+          title: "{{ states(entity) === 'above_horizon' ? 'Day' : 'Night' }}",
+          subtitle: "{{ states(entity) }}",
           extra_icon: "mdi:check-circle",
           extra_icon_color: "#16a34a"
         }
@@ -209,22 +209,57 @@ class SeagullBadgesCard extends HTMLElement {
     if (typeof value !== "string") return value;
 
     const t = value.trim();
-    if (!(t.startsWith("[[[") && t.endsWith("]]]"))) {
-      return value;
+    const hasMustache = t.includes("{{") && t.includes("}}");
+    if (!hasMustache) return value;
+
+    const hass = this._hass;
+    const entity = badge?.entity;
+
+    const states = (entityId) => {
+      const id = entityId || entity;
+      return id && hass?.states?.[id] ? hass.states[id].state : undefined;
+    };
+
+    const state_attr = (entityId, attr) => {
+      const id = entityId || entity;
+      return id && hass?.states?.[id] ? hass.states[id].attributes?.[attr] : undefined;
+    };
+
+    const is_state = (entityId, expected) => states(entityId) === expected;
+
+    const renderExpr = (expr) => {
+      const code = expr.trim();
+      try {
+        const fn = new Function(
+          "hass",
+          "entity",
+          "badge",
+          "config",
+          "states",
+          "state_attr",
+          "is_state",
+          `return (${code});`
+        );
+        const out = fn(hass, entity, badge, this._config, states, state_attr, is_state);
+        return out ?? "";
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn("seagull-badges-card template error", e, code);
+        return "";
+      }
+    };
+
+    const onlyExpr = t.match(/^\{\{([\s\S]+)\}\}$/);
+    if (onlyExpr) {
+      const out = renderExpr(onlyExpr[1]);
+      return out === "" ? fallback : out;
     }
 
-    const code = t.slice(3, -3);
-    const entity = badge.entity ? this._hass?.states?.[badge.entity] : undefined;
-
-    try {
-      const fn = new Function("hass", "entity", "badge", "config", code);
-      const out = fn(this._hass, entity, badge, this._config);
-      return out ?? fallback;
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.warn("seagull-badges-card template error", e);
-      return fallback;
-    }
+    const out = value.replace(/\{\{([\s\S]*?)\}\}/g, (_m, expr) => {
+      const v = renderExpr(expr);
+      return v === undefined || v === null ? "" : String(v);
+    });
+    return out;
   }
 
   _toBool(value, fallback = true) {
@@ -279,5 +314,5 @@ window.customCards.push({
   type: "seagull-badges-card",
   name: "Seagull Badges Card",
   preview: true,
-  description: "Badges card with templated visibility, colors and labels"
+  description: "Badges card with mustache templates, visibility, colors and labels"
 });

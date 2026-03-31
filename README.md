@@ -18,11 +18,11 @@ gap: 10
 padding: 10
 badges:
   - entity: sun.sun
-    show: "[[[ return true ]]]"
+    show: "{{ true }}"
     icon: mdi:weather-sunny
-    icon_color: "[[[ return entity?.state === 'above_horizon' ? '#f59e0b' : '#4b5563' ]]]"
-    title: "[[[ return entity?.state === 'above_horizon' ? 'Day' : 'Night' ]]]"
-    subtitle: "[[[ return entity?.state ]]]"
+    icon_color: "{{ states(entity) === 'above_horizon' ? '#f59e0b' : '#4b5563' }}"
+    title: "{{ states(entity) === 'above_horizon' ? 'Day' : 'Night' }}"
+    subtitle: "{{ states(entity) }}"
     extra_icon: mdi:check-circle
     extra_icon_color: '#16a34a'
 ```
@@ -40,17 +40,24 @@ badges:
 
 ### Templates
 
-Templates are JS snippets in `[[[ ... ]]]` format and receive:
+Templates use mustache expressions in `{{ ... }}` format.
 
+Available helpers/variables inside template:
+
+- `entity` — current badge entity_id string
 - `hass`
-- `entity`
 - `badge`
 - `config`
+- `states(entity_id)`
+- `state_attr(entity_id, attr)`
+- `is_state(entity_id, value)`
 
-Example:
+Examples:
 
 ```yaml
-show: "[[[ return entity && entity.state !== 'unavailable' ]]]"
+show: "{{ states(entity) !== 'unavailable' }}"
+title: "{{ states(entity) === 'on' ? 'Active' : 'Idle' }}"
+subtitle: "{{ state_attr(entity, 'friendly_name') }}"
 ```
 
 ## Behavior
