@@ -182,6 +182,13 @@ class SeagullBadgesCard extends HTMLElement {
           overflow: hidden;
           text-overflow: ellipsis;
         }
+        .sg-single-line .sg-title,
+        .sg-single-line .sg-subtitle {
+          font-size: 15px;
+          line-height: 1;
+          opacity: 1;
+          font-weight: 700;
+        }
         .sg-single {
           justify-content: center;
         }
@@ -229,8 +236,10 @@ class SeagullBadgesCard extends HTMLElement {
       `;
     }
 
+    const singleLine = (hasTitle && !hasSubtitle) || (!hasTitle && hasSubtitle);
+
     const textHtml = hasTitle || hasSubtitle
-      ? `<div class="sg-text ${hasTitle && hasSubtitle ? "" : "sg-single"}">
+      ? `<div class="sg-text ${hasTitle && hasSubtitle ? "" : "sg-single"} ${singleLine ? "sg-single-line" : ""}">
            ${hasTitle ? `<div class="sg-title">${this._esc(item.title)}</div>` : ""}
            ${hasSubtitle ? `<div class="sg-subtitle">${this._esc(item.subtitle)}</div>` : ""}
          </div>`
