@@ -119,6 +119,11 @@ class SeagullBadgesCard extends HTMLElement {
           gap: 6px;
           overflow: visible;
           margin: 0 auto;
+          cursor: pointer;
+          transition: background-color .16s ease, transform .12s ease;
+        }
+        .sg-item:hover {
+          background: var(--sg-hover-bg, transparent) !important;
         }
         .sg-circle {
           width: var(--sg-size);
@@ -145,7 +150,7 @@ class SeagullBadgesCard extends HTMLElement {
           flex: 0 0 auto;
         }
         .sg-icon {
-          --mdc-icon-size: 20px;
+          --mdc-icon-size: 22px;
         }
         .sg-pill > .sg-icon {
           flex: 0 0 auto;
@@ -216,7 +221,7 @@ class SeagullBadgesCard extends HTMLElement {
 
     if (isCircle) {
       return `
-        <div class="sg-item sg-circle" data-sg-id="${id}">
+        <div class="sg-item sg-circle" data-sg-id="${id}" style="--sg-hover-bg:${this._withAlpha(item.iconColor, 0.22)};">
           ${iconHtml}
           ${extraIconHtml}
         </div>
@@ -231,7 +236,7 @@ class SeagullBadgesCard extends HTMLElement {
       : "";
 
     return `
-      <div class="sg-item sg-pill ${item.icon ? "" : "sg-text-only"}" data-sg-id="${id}" style="background:${this._withAlpha(item.iconColor, 0.14)};">
+      <div class="sg-item sg-pill ${item.icon ? "" : "sg-text-only"}" data-sg-id="${id}" style="background:${this._withAlpha(item.iconColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.iconColor, 0.22)};">
         ${iconHtml}
         ${textHtml}
         ${extraIconHtml}
