@@ -15,7 +15,7 @@ Home Assistant custom card: `seagull-badges-card`.
 ```yaml
 type: custom:seagull-badges-card
 gap: 10
-padding: 10
+padding: 4
 badges:
   - entity: sun.sun
     show: "{{ true }}"

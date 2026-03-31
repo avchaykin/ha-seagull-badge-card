@@ -25,7 +25,7 @@ class SeagullBadgesCard extends HTMLElement {
     this._config = {
       badges: config.badges,
       gap: config.gap ?? 10,
-      padding: config.padding ?? 10,
+      padding: config.padding ?? 4,
       ...config,
     };
   }
@@ -89,8 +89,8 @@ class SeagullBadgesCard extends HTMLElement {
           display: grid;
           grid-template-columns: repeat(${items.length}, minmax(0, 1fr));
           gap: ${gap}px;
-          align-items: stretch;
-          padding: ${padding}px;
+          align-items: center;
+          padding: ${padding}px 8px;
         }
         .sg-item {
           min-width: 0;
@@ -100,16 +100,17 @@ class SeagullBadgesCard extends HTMLElement {
           align-items: center;
           justify-content: center;
           gap: 8px;
-          overflow: hidden;
+          overflow: visible;
+          margin: 0 auto;
         }
         .sg-circle {
-          width: 52px;
-          height: 52px;
+          width: 50px;
+          height: 50px;
           margin: 0 auto;
         }
         .sg-pill {
-          min-height: 52px;
-          padding: 8px 14px;
+          min-height: 46px;
+          padding: 6px 12px;
           justify-content: flex-start;
         }
         .sg-icon-bg {
@@ -124,16 +125,12 @@ class SeagullBadgesCard extends HTMLElement {
         .sg-icon {
           --mdc-icon-size: 24px;
         }
-        .sg-text-bg {
-          border-radius: 9999px;
-          padding: 6px 10px;
-          min-width: 0;
-        }
         .sg-text {
           min-width: 0;
           line-height: 1.15;
           display: flex;
           flex-direction: column;
+          justify-content: center;
         }
         .sg-title {
           font-weight: 700;
@@ -151,6 +148,9 @@ class SeagullBadgesCard extends HTMLElement {
         }
         .sg-single {
           justify-content: center;
+        }
+        .sg-pill.sg-text-only {
+          padding-left: 12px;
         }
         .sg-extra {
           position: absolute;
@@ -187,16 +187,14 @@ class SeagullBadgesCard extends HTMLElement {
     }
 
     const textHtml = hasTitle || hasSubtitle
-      ? `<div class="sg-text-bg" style="background:${this._withAlpha(item.iconColor, 0.14)};">
-           <div class="sg-text ${hasTitle && hasSubtitle ? "" : "sg-single"}">
-             ${hasTitle ? `<div class="sg-title">${this._esc(item.title)}</div>` : ""}
-             ${hasSubtitle ? `<div class="sg-subtitle">${this._esc(item.subtitle)}</div>` : ""}
-           </div>
+      ? `<div class="sg-text ${hasTitle && hasSubtitle ? "" : "sg-single"}">
+           ${hasTitle ? `<div class="sg-title">${this._esc(item.title)}</div>` : ""}
+           ${hasSubtitle ? `<div class="sg-subtitle">${this._esc(item.subtitle)}</div>` : ""}
          </div>`
       : "";
 
     return `
-      <div class="sg-item sg-pill">
+      <div class="sg-item sg-pill ${item.icon ? "" : "sg-text-only"}" style="background:${this._withAlpha(item.iconColor, 0.14)};">
         ${iconHtml}
         ${textHtml}
         ${extraIconHtml}
