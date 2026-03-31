@@ -125,6 +125,10 @@ class SeagullBadgesCard extends HTMLElement {
         .sg-icon {
           --mdc-icon-size: 24px;
         }
+        .sg-pill > .sg-icon {
+          flex: 0 0 auto;
+          margin-left: 2px;
+        }
         .sg-text {
           min-width: 0;
           line-height: 1.15;
@@ -167,17 +171,21 @@ class SeagullBadgesCard extends HTMLElement {
   _renderBadge(item) {
     const hasTitle = !!item.title;
     const hasSubtitle = !!item.subtitle;
+    const isCircle = !!item.icon && !hasTitle && !hasSubtitle;
+
     const iconHtml = item.icon
-      ? `<span class="sg-icon-bg" style="background:${this._withAlpha(item.iconColor, 0.14)};">
-           <ha-icon class="sg-icon" style="color:${item.iconColor}" icon="${this._esc(item.icon)}"></ha-icon>
-         </span>`
+      ? (isCircle
+        ? `<span class="sg-icon-bg" style="background:${this._withAlpha(item.iconColor, 0.14)};">
+             <ha-icon class="sg-icon" style="color:${item.iconColor}" icon="${this._esc(item.icon)}"></ha-icon>
+           </span>`
+        : `<ha-icon class="sg-icon" style="color:${item.iconColor}" icon="${this._esc(item.icon)}"></ha-icon>`)
       : "";
 
     const extraIconHtml = item.extraIcon
       ? `<ha-icon class="sg-extra" style="color:${item.extraIconColor}" icon="${this._esc(item.extraIcon)}"></ha-icon>`
       : "";
 
-    if (item.icon && !hasTitle && !hasSubtitle) {
+    if (isCircle) {
       return `
         <div class="sg-item sg-circle">
           ${iconHtml}
