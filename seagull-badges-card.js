@@ -26,6 +26,7 @@ class SeagullBadgesCard extends HTMLElement {
       badges: config.badges,
       gap: config.gap ?? 10,
       padding: config.padding ?? 4,
+      badge_size: config.badge_size ?? 50,
       ...config,
     };
   }
@@ -85,6 +86,7 @@ class SeagullBadgesCard extends HTMLElement {
 
     return `
       <style>
+        .sg-wrap { --sg-size: ${Number(this._config.badge_size) || 50}px; }
         .sg-wrap {
           display: grid;
           grid-template-columns: repeat(${items.length}, minmax(0, 1fr));
@@ -99,23 +101,24 @@ class SeagullBadgesCard extends HTMLElement {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 8px;
+          gap: 6px;
           overflow: visible;
           margin: 0 auto;
         }
         .sg-circle {
-          width: 50px;
-          height: 50px;
+          width: var(--sg-size);
+          height: var(--sg-size);
           margin: 0 auto;
         }
         .sg-pill {
-          min-height: 46px;
-          padding: 6px 12px;
+          width: var(--sg-size);
+          height: var(--sg-size);
+          padding: 4px 6px;
           justify-content: flex-start;
         }
         .sg-icon-bg {
-          width: 38px;
-          height: 38px;
+          width: 34px;
+          height: 34px;
           border-radius: 9999px;
           display: inline-flex;
           align-items: center;
@@ -123,7 +126,7 @@ class SeagullBadgesCard extends HTMLElement {
           flex: 0 0 auto;
         }
         .sg-icon {
-          --mdc-icon-size: 24px;
+          --mdc-icon-size: 20px;
         }
         .sg-pill > .sg-icon {
           flex: 0 0 auto;
@@ -131,20 +134,21 @@ class SeagullBadgesCard extends HTMLElement {
         }
         .sg-text {
           min-width: 0;
-          line-height: 1.15;
+          max-width: calc(100% - 24px - 6px);
+          line-height: 1.05;
           display: flex;
           flex-direction: column;
           justify-content: center;
         }
         .sg-title {
           font-weight: 700;
-          font-size: 13px;
+          font-size: 10px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
         .sg-subtitle {
-          font-size: 12px;
+          font-size: 10px;
           opacity: .85;
           white-space: nowrap;
           overflow: hidden;
@@ -154,13 +158,13 @@ class SeagullBadgesCard extends HTMLElement {
           justify-content: center;
         }
         .sg-pill.sg-text-only {
-          padding-left: 12px;
+          justify-content: center;
         }
         .sg-extra {
           position: absolute;
-          top: 3px;
-          right: 4px;
-          --mdc-icon-size: 13px;
+          top: 2px;
+          right: 2px;
+          --mdc-icon-size: 11px;
           filter: drop-shadow(0 1px 1px rgba(0,0,0,.18));
         }
       </style>

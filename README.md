@@ -16,6 +16,7 @@ Home Assistant custom card: `seagull-badges-card`.
 type: custom:seagull-badges-card
 gap: 10
 padding: 4
+badge_size: 50
 badges:
   - entity: sun.sun
     show: "{{ true }}"
