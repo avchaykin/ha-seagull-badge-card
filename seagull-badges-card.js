@@ -611,6 +611,15 @@ class SeagullBadgesCard extends HTMLElement {
       return;
     }
 
+    if (action === "toggle") {
+      const targetEntity = (typeof actionCfg === "object" && actionCfg?.entity)
+        ? String(actionCfg.entity)
+        : item.entity;
+      if (!targetEntity) return;
+      this._hass?.callService?.("homeassistant", "toggle", { entity_id: targetEntity });
+      return;
+    }
+
     // unsupported custom actions for now: safely no-op
   }
 
@@ -625,12 +634,22 @@ class SeagullBadgesCard extends HTMLElement {
       const idx = Number(idxRaw);
       if (!Number.isNaN(idx) && Array.isArray(item.subIcons) && item.subIcons[idx]) {
         const si = item.subIcons[idx];
+        const subEntity = si.entity || item.entity;
+        const patchEntityAction = (act) => {
+          if (!act || typeof act !== "object") return act;
+          const name = String(act.action || "").toLowerCase();
+          if (["more-info", "toggle"].includes(name)) {
+            return { ...act, entity: subEntity };
+          }
+          return act;
+        };
+
         return {
           ...item,
-          entity: si.entity || item.entity,
-          tap_action: si.tap_action ?? item.tap_action,
-          double_tap_action: si.double_tap_action ?? item.double_tap_action,
-          hold_action: si.hold_action ?? item.hold_action,
+          entity: subEntity,
+          tap_action: patchEntityAction(si.tap_action ?? item.tap_action),
+          double_tap_action: patchEntityAction(si.double_tap_action ?? item.double_tap_action),
+          hold_action: patchEntityAction(si.hold_action ?? item.hold_action),
         };
       }
       return item;

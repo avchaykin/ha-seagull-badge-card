@@ -126,6 +126,7 @@ When `sub_icon_group: true`:
 - `sub_icon` values are taken from visible child badges
 - multiple visible child sub-icons are rendered in a row
 - tap/double-tap/hold on a specific sub-icon triggers that child badge actions
+- for entity-based actions (`more-info`, `toggle`), entity is taken from the clicked child badge
 
 Example:
 
