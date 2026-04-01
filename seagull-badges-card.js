@@ -544,6 +544,7 @@ class SeagullBadgesCard extends HTMLElement {
         iroygbiv: "{{ Number(value) < 15 ? '#a855f7' : Number(value) < 30 ? '#6366f1' : Number(value) < 45 ? '#3b82f6' : Number(value) < 60 ? '#22c55e' : Number(value) < 75 ? '#eab308' : Number(value) < 90 ? '#f97316' : '#ef4444' }}",
         royg: "{{ Number(value) < 35 ? '#ef4444' : Number(value) < 70 ? '#eab308' : '#22c55e' }}",
         iroyg: "{{ Number(value) < 35 ? '#22c55e' : Number(value) < 70 ? '#eab308' : '#ef4444' }}",
+        temperature: "{{ Number(value) <= 0 ? '#3b82f6' : Number(value) <= 10 ? '#06b6d4' : Number(value) <= 20 ? '#22c55e' : Number(value) <= 28 ? '#eab308' : Number(value) <= 35 ? '#f97316' : '#ef4444' }}",
         on_off: "{{ ['on','open','playing','locked'].includes(String(value).toLowerCase()) ? 'var(--state-icon-active-color, #f59e0b)' : 'var(--state-icon-color, #6b7280)' }}",
       };
     }
