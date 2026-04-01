@@ -46,7 +46,8 @@ You can use these without defining `icon_templates` / `color_templates` manually
 | `door` | <img src="https://api.iconify.design/mdi/door-open.svg" width="20" /> <img src="https://api.iconify.design/mdi/door-closed.svg" width="20" /> | open / closed |
 | `window` | <img src="https://api.iconify.design/mdi/window-open.svg" width="20" /> <img src="https://api.iconify.design/mdi/window-closed.svg" width="20" /> | open / closed |
 | `leak` | <img src="https://api.iconify.design/mdi/water-alert.svg" width="20" /> <img src="https://api.iconify.design/mdi/water-check.svg" width="20" /> | leak / dry |
-| `media` | <img src="https://api.iconify.design/mdi/play-circle.svg" width="20" /> <img src="https://api.iconify.design/mdi/pause-circle.svg" width="20" /> <img src="https://api.iconify.design/mdi/stop-circle.svg" width="20" /> <img src="https://api.iconify.design/mdi/play-circle-outline.svg" width="20" /> | playing / paused / stopped / other |
+| `media` | <img src="https://api.iconify.design/mdi/play.svg" width="20" /> <img src="https://api.iconify.design/mdi/pause.svg" width="20" /> <img src="https://api.iconify.design/mdi/stop.svg" width="20" /> <img src="https://api.iconify.design/mdi/play-outline.svg" width="20" /> | playing / paused / stopped / other |
+| `media-circle` | <img src="https://api.iconify.design/mdi/play-circle.svg" width="20" /> <img src="https://api.iconify.design/mdi/pause-circle.svg" width="20" /> <img src="https://api.iconify.design/mdi/stop-circle.svg" width="20" /> <img src="https://api.iconify.design/mdi/play-circle-outline.svg" width="20" /> | playing / paused / stopped / other |
 | `volume` | <img src="https://api.iconify.design/mdi/volume-off.svg" width="20" /> <img src="https://api.iconify.design/mdi/volume-low.svg" width="20" /> <img src="https://api.iconify.design/mdi/volume-medium.svg" width="20" /> <img src="https://api.iconify.design/mdi/volume-high.svg" width="20" /> | 0..100 or 0..1 |
 
 ### Built-in color templates

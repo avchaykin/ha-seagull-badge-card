@@ -493,7 +493,8 @@ class SeagullBadgesCard extends HTMLElement {
         door: "{{ ['open','on','opening'].includes(String(value).toLowerCase()) ? 'mdi:door-open' : 'mdi:door-closed' }}",
         window: "{{ ['open','on','opening'].includes(String(value).toLowerCase()) ? 'mdi:window-open' : 'mdi:window-closed' }}",
         leak: "{{ ['on','wet','leak','detected','problem'].includes(String(value).toLowerCase()) ? 'mdi:water-alert' : 'mdi:water-check' }}",
-        media: "{{ String(value).toLowerCase() === 'playing' ? 'mdi:play-circle' : String(value).toLowerCase() === 'paused' ? 'mdi:pause-circle' : String(value).toLowerCase() === 'stopped' ? 'mdi:stop-circle' : 'mdi:play-circle-outline' }}",
+        media: "{{ String(value).toLowerCase() === 'playing' ? 'mdi:play' : String(value).toLowerCase() === 'paused' ? 'mdi:pause' : String(value).toLowerCase() === 'stopped' ? 'mdi:stop' : 'mdi:play-outline' }}",
+        'media-circle': "{{ String(value).toLowerCase() === 'playing' ? 'mdi:play-circle' : String(value).toLowerCase() === 'paused' ? 'mdi:pause-circle' : String(value).toLowerCase() === 'stopped' ? 'mdi:stop-circle' : 'mdi:play-circle-outline' }}",
         volume: "{{ (Number(value) <= 1 ? Number(value) * 100 : Number(value)) <= 0 ? 'mdi:volume-off' : (Number(value) <= 1 ? Number(value) * 100 : Number(value)) <= 33 ? 'mdi:volume-low' : (Number(value) <= 1 ? Number(value) * 100 : Number(value)) <= 66 ? 'mdi:volume-medium' : 'mdi:volume-high' }}",
       };
     }
