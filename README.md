@@ -86,6 +86,8 @@ If `param` is omitted, default value is `states(entity)`.
 - `show_above` — show only if numeric `states(entity)` is above this number
 - `icon` — left icon (mdi)
 - `icon_template` — named icon template reference (preferred over `icon` when set)
+- `sub_icon` — optional middle icon (shown in a small circle between main icon and text)
+- `sub_icon_color` — template/string color for `sub_icon` (default: main icon color)
 - `color` — template/string; default `#4b5563`
 - `color_template` — named color template reference (preferred over `color` when set)
 - `title` — template/string

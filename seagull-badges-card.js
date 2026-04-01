@@ -159,6 +159,9 @@ class SeagullBadgesCard extends HTMLElement {
     const title = this._tpl(badge.title, badge, "");
     const subtitle = this._tpl(badge.subtitle, badge, "");
 
+    const subIcon = this._tpl(badge.sub_icon, badge, "");
+    const subIconColor = this._tpl(badge.sub_icon_color, badge, iconColor || "#6b7280");
+
     const extraIcon = this._tpl(badge.badge ?? badge.extra_icon, badge, "");
     const extraIconColor = this._tpl(badge.badge_color ?? badge.extra_icon_color, badge, "#6b7280");
 
@@ -176,6 +179,8 @@ class SeagullBadgesCard extends HTMLElement {
       iconColor,
       title: this._str(title),
       subtitle: this._str(subtitle),
+      subIcon,
+      subIconColor,
       extraIcon,
       extraIconColor,
       tap_action: badge.tap_action ?? { action: "more-info" },
@@ -256,6 +261,19 @@ class SeagullBadgesCard extends HTMLElement {
           margin-left: 0;
           margin-right: 6px;
         }
+        .sg-sub-icon-bg {
+          width: 16px;
+          height: 16px;
+          border-radius: 9999px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          flex: 0 0 auto;
+          margin-right: 6px;
+        }
+        .sg-sub-icon {
+          --mdc-icon-size: 11px;
+        }
         .sg-text {
           min-width: 0;
           max-width: calc(100% - 18px);
@@ -333,6 +351,12 @@ class SeagullBadgesCard extends HTMLElement {
         : `<ha-icon class="sg-icon" style="color:${item.iconColor}" icon="${this._esc(item.icon)}"></ha-icon>`)
       : "";
 
+    const subIconHtml = item.subIcon
+      ? `<span class="sg-sub-icon-bg" style="background:${this._withAlpha(item.subIconColor, 0.14)};">
+           <ha-icon class="sg-sub-icon" style="color:${item.subIconColor}" icon="${this._esc(item.subIcon)}"></ha-icon>
+         </span>`
+      : "";
+
     const extraIconHtml = item.extraIcon
       ? `<ha-icon class="sg-extra" style="color:${item.extraIconColor}" icon="${this._esc(item.extraIcon)}"></ha-icon>`
       : "";
@@ -360,6 +384,7 @@ class SeagullBadgesCard extends HTMLElement {
     return `
       <div class="sg-item sg-pill ${item.icon ? "" : "sg-text-only"}" data-sg-id="${id}" style="background:${this._withAlpha(item.iconColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.iconColor, 0.22)};">
         ${iconHtml}
+        ${subIconHtml}
         ${textHtml}
         ${extraIconHtml}
       </div>
