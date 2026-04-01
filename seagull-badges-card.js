@@ -251,6 +251,8 @@ class SeagullBadgesCard extends HTMLElement {
           overflow: visible;
           margin: 0 auto;
           cursor: pointer;
+          box-sizing: border-box;
+          outline: none;
           transition: background-color .16s ease, transform .12s ease;
         }
         .sg-item:hover {
@@ -260,6 +262,7 @@ class SeagullBadgesCard extends HTMLElement {
           width: var(--sg-size);
           height: var(--sg-size);
           margin: 0 auto;
+          box-sizing: border-box;
         }
         .sg-pill {
           min-width: var(--sg-size);
