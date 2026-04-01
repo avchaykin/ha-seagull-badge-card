@@ -64,6 +64,7 @@ Card-level template registries:
 - `icon_templates` — map of `template_name: "{{ ... }}"` for icons
 - `color_templates` — map of `template_name: "{{ ... }}"` for colors
 - `debug` — `true/false`; prints template resolution diagnostics to browser console and shows recent debug lines inside the card
+- `show_all` — `true/false`; when `true`, all badges are shown in dashboard edit mode (ignores per-badge `show*` filters)
 
 `icon_template` / `color_template` value formats on each badge:
 
@@ -163,3 +164,4 @@ The hook does not block commits if deploy fails (it prints a warning).
 - Visible badges are laid out in a single row with equal width columns.
 - If only icon is set (no title/subtitle), badge renders as a circle.
 - Otherwise badge renders as rounded pill with icon + text block.
+- Badge text color follows icon color.

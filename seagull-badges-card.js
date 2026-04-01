@@ -28,6 +28,7 @@ class SeagullBadgesCard extends HTMLElement {
       padding: config.padding ?? 4,
       badge_size: config.badge_size ?? 50,
       debug: config.debug ?? false,
+      show_all: config.show_all ?? false,
       ...config,
     };
   }
@@ -60,7 +61,21 @@ class SeagullBadgesCard extends HTMLElement {
     });
   }
 
+  _isEditMode() {
+    try {
+      if (this._hass?.editMode === true) return true;
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("edit") === "1") return true;
+      if (url.pathname.includes("/config/dashboard")) return true;
+      return document?.body?.classList?.contains("edit-mode") || false;
+    } catch (_e) {
+      return false;
+    }
+  }
+
   _isBadgeVisible(badge) {
+    if (this._config?.show_all && this._isEditMode()) return true;
+
     const showOk = this._toBool(this._tpl(badge.show, badge, true), true);
     if (!showOk) return false;
 
@@ -336,7 +351,7 @@ class SeagullBadgesCard extends HTMLElement {
     const singleLine = (hasTitle && !hasSubtitle) || (!hasTitle && hasSubtitle);
 
     const textHtml = hasTitle || hasSubtitle
-      ? `<div class="sg-text ${hasTitle && hasSubtitle ? "" : "sg-single"} ${singleLine ? "sg-single-line" : ""}">
+      ? `<div class="sg-text ${hasTitle && hasSubtitle ? "" : "sg-single"} ${singleLine ? "sg-single-line" : ""}" style="color:${item.iconColor};">
            ${hasTitle ? `<div class="sg-title">${this._esc(item.title)}</div>` : ""}
            ${hasSubtitle ? `<div class="sg-subtitle">${this._esc(item.subtitle)}</div>` : ""}
          </div>`
