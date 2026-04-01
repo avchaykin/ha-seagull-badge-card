@@ -217,6 +217,7 @@ class SeagullBadgesCard extends HTMLElement {
     const padding = Number(this._config.padding) || 10;
     const paddingY = Number(this._config.padding_y);
     const effectivePaddingY = Number.isFinite(paddingY) ? paddingY : padding;
+    const rowMinHeight = effectivePaddingY === 0 ? "auto" : "var(--sg-size)";
 
     const badgesHtml = items.map((item, index) => this._renderBadge(item, index)).join("");
     const debugHtml = this._config.debug
@@ -231,7 +232,7 @@ class SeagullBadgesCard extends HTMLElement {
           grid-template-columns: repeat(${items.length}, minmax(0, 1fr));
           gap: ${gap}px;
           align-items: center;
-          min-height: var(--sg-size);
+          min-height: ${rowMinHeight};
           padding: ${effectivePaddingY}px 8px;
         }
         .sg-item {
