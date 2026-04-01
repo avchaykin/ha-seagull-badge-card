@@ -69,6 +69,7 @@ Card-level template registries:
 - `debug` — `true/false`; prints template resolution diagnostics to browser console and shows recent debug lines inside the card
 - `show_all` — `true/false`; when `true`, all badges are shown in dashboard edit mode (ignores per-badge `show*` filters)
 - `placeholder_text` — text shown when no badges are visible; set empty string (`""`) to render nothing
+- `palette` — map of named colors. You can reuse these names in `color`, `sub_icon_color`, `badge_color`, and color templates
 
 `icon_template` / `color_template` value formats on each badge:
 
@@ -77,6 +78,21 @@ Card-level template registries:
 - array: `[battery, "{{ states(entity) }}", 100, 0]`
 
 If `param` is omitted, default value is `states(entity)`.
+
+Palette example:
+
+```yaml
+palette:
+  accent: "#22c55e"
+  warning: "#f59e0b"
+  danger: "#ef4444"
+  ha_primary: "primary"
+
+badges:
+  - entity: sensor.phone_battery
+    color: danger
+    sub_icon_color: ha_primary
+```
 
 If `scale` and/or `offset` are provided, template `value` is normalized to 0..100 with:
 

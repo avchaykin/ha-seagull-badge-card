@@ -30,6 +30,7 @@ class SeagullBadgesCard extends HTMLElement {
       debug: config.debug ?? false,
       show_all: config.show_all ?? false,
       placeholder_text: config.placeholder_text ?? "No badges to display",
+      palette: config.palette ?? {},
       ...config,
     };
   }
@@ -155,7 +156,7 @@ class SeagullBadgesCard extends HTMLElement {
       badge.color_template,
       badge,
       this._tpl(badge.color ?? badge.icon_color, badge, "#4b5563")
-    ));
+    ), badge);
 
     const title = this._tpl(badge.title, badge, "");
     const subtitle = this._tpl(badge.subtitle, badge, "");
@@ -171,12 +172,12 @@ class SeagullBadgesCard extends HTMLElement {
       badge.sub_icon_color_template,
       badge,
       this._tpl(badge.sub_icon_color, badge, iconColor || "#6b7280")
-    ));
+    ), badge);
     const subIconSize = Number(this._tpl(badge.sub_icon_size, badge, 0.5));
     const subIconBg = this._toBool(this._tpl(badge.sub_icon_bg, badge, true), true);
 
     const extraIcon = this._tpl(badge.badge ?? badge.extra_icon, badge, "");
-    const extraIconColor = this._normalizeColor(this._tpl(badge.badge_color ?? badge.extra_icon_color, badge, "#6b7280"));
+    const extraIconColor = this._normalizeColor(this._tpl(badge.badge_color ?? badge.extra_icon_color, badge, "#6b7280"), badge);
 
     this._debug("badge:normalize", {
       entity: badge.entity,
@@ -799,12 +800,19 @@ class SeagullBadgesCard extends HTMLElement {
     return String(v);
   }
 
-  _normalizeColor(color) {
+  _normalizeColor(color, badge, _depth = 0) {
     if (color === undefined || color === null) return color;
     if (typeof color !== "string") return color;
 
     const raw = color.trim();
     const key = raw.toLowerCase();
+
+    const palette = this._config?.palette || {};
+    if (_depth < 4 && Object.prototype.hasOwnProperty.call(palette, raw)) {
+      const paletteValue = this._tpl(palette[raw], badge, raw);
+      return this._normalizeColor(paletteValue, badge, _depth + 1);
+    }
+
     const map = {
       primary: "var(--primary-color)",
       secondary: "var(--secondary-text-color)",
