@@ -28,6 +28,7 @@ class SeagullBadgesCard extends HTMLElement {
       padding: config.padding ?? 4,
       padding_y: config.padding_y ?? config.padding ?? 4,
       badge_size: config.badge_size ?? 50,
+      full_width: config.full_width ?? false,
       debug: config.debug ?? false,
       show_all: config.show_all ?? false,
       placeholder_text: config.placeholder_text ?? "No badges to display",
@@ -359,6 +360,14 @@ class SeagullBadgesCard extends HTMLElement {
           min-height: ${rowMinHeight};
           padding: ${effectivePaddingY}px 8px;
         }
+        .sg-wrap.sg-full .sg-item {
+          width: 100%;
+          margin: 0;
+        }
+        .sg-wrap.sg-full .sg-pill {
+          width: 100%;
+          max-width: 100%;
+        }
         .sg-item {
           min-width: 0;
           position: relative;
@@ -495,7 +504,7 @@ class SeagullBadgesCard extends HTMLElement {
           overflow: auto;
         }
       </style>
-      <div class="sg-wrap">${badgesHtml}</div>
+      <div class="sg-wrap ${this._config.full_width ? "sg-full" : ""}">${badgesHtml}</div>
       ${debugHtml}
     `;
   }

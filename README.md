@@ -69,6 +69,7 @@ Card-level template registries:
 
 - `icon_templates` — map of `template_name: "{{ ... }}"` for icons
 - `color_templates` — map of `template_name: "{{ ... }}"` for colors
+- `full_width` — `true/false`; when `true`, each badge stretches to full available width in its column
 - `debug` — `true/false`; prints template resolution diagnostics to browser console and shows recent debug lines inside the card
 - `show_all` — `true/false`; when `true`, all badges are shown in dashboard edit mode (ignores per-badge `show*` filters)
 - `placeholder_text` — text shown when no badges are visible; set empty string (`""`) to render nothing
