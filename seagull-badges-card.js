@@ -341,7 +341,8 @@ class SeagullBadgesCard extends HTMLElement {
   _renderBadge(item, index) {
     const hasTitle = !!item.title;
     const hasSubtitle = !!item.subtitle;
-    const isCircle = !!item.icon && !hasTitle && !hasSubtitle;
+    const hasSubIcon = !!item.subIcon;
+    const isCircle = !!item.icon && !hasTitle && !hasSubtitle && !hasSubIcon;
 
     const iconHtml = item.icon
       ? (isCircle
