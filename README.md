@@ -131,8 +131,8 @@ If `scale` and/or `offset` are provided, template `value` is normalized to 0..10
 - `border_size` — border width in px (default `0`, no border)
 - `title` — template/string
 - `subtitle` — template/string
-- `badge` — optional small icon in top-right corner
-- `badge_color` — template/string for badge icon color
+- `badge` — optional small icon in top-right corner (with round background)
+- `badge_color` — template/string for badge icon color (default: main icon color)
 - `tap_action` — click action (default: `more-info`)
 - `double_tap_action` — double click action (default: `none`)
 - `hold_action` — hold action (default: `none`)

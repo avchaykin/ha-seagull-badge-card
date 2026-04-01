@@ -197,7 +197,7 @@ class SeagullBadgesCard extends HTMLElement {
     const subIconBg = this._toBool(this._tpl(badge.sub_icon_bg, badge, true), true);
 
     const extraIcon = this._tpl(badge.badge ?? badge.extra_icon, badge, "");
-    const extraIconColor = this._normalizeColor(this._tpl(badge.badge_color ?? badge.extra_icon_color, badge, "#6b7280"), badge);
+    const extraIconColor = this._normalizeColor(this._tpl(badge.badge_color ?? badge.extra_icon_color, badge, iconColor || "#6b7280"), badge);
 
     this._debug("badge:normalize", {
       entity: badge.entity,
@@ -369,8 +369,15 @@ class SeagullBadgesCard extends HTMLElement {
           position: absolute;
           top: 2px;
           right: 2px;
-          --mdc-icon-size: 11px;
-          filter: drop-shadow(0 1px 1px rgba(0,0,0,.18));
+          width: 15px;
+          height: 15px;
+          border-radius: 9999px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .sg-extra-icon {
+          --mdc-icon-size: 12px;
         }
         .sg-debug {
           margin: 8px;
@@ -413,7 +420,9 @@ class SeagullBadgesCard extends HTMLElement {
       : "";
 
     const extraIconHtml = item.extraIcon
-      ? `<ha-icon class="sg-extra" style="color:${item.extraIconColor}" icon="${this._esc(item.extraIcon)}"></ha-icon>`
+      ? `<span class="sg-extra" style="background:${this._withAlpha(item.extraIconColor, 0.14)};">
+           <ha-icon class="sg-extra-icon" style="color:${item.extraIconColor}" icon="${this._esc(item.extraIcon)}"></ha-icon>
+         </span>`
       : "";
 
     const id = `sg-${index}`;
