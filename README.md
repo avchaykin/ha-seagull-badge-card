@@ -37,24 +37,24 @@ You can use these without defining `icon_templates` / `color_templates` manually
 
 ### Built-in icon templates
 
-- `battery` → `mdi:battery-alert-variant-outline`, `mdi:battery-10..90`, `mdi:battery` (value 0..100)
-- `light` → `mdi:lightbulb-on` / `mdi:lightbulb`
-- `lock` → `mdi:lock` / `mdi:lock-open-variant`
-- `door` → `mdi:door-open` / `mdi:door-closed`
-- `window` → `mdi:window-open` / `mdi:window-closed`
-- `leak` → `mdi:water-alert` / `mdi:water-check`
-- `media` → `mdi:play-circle`, `mdi:pause-circle`, `mdi:stop-circle`, `mdi:play-circle-outline`
-- `volume` → `mdi:volume-off`, `mdi:volume-low`, `mdi:volume-medium`, `mdi:volume-high`
+| Template | Preview | Notes |
+|---|---|---|
+| `battery` | <img src="https://api.iconify.design/mdi/battery-alert-variant-outline.svg" width="20" /> <img src="https://api.iconify.design/mdi/battery-30.svg" width="20" /> <img src="https://api.iconify.design/mdi/battery-60.svg" width="20" /> <img src="https://api.iconify.design/mdi/battery-90.svg" width="20" /> <img src="https://api.iconify.design/mdi/battery.svg" width="20" /> | value 0..100 |
+| `light` | <img src="https://api.iconify.design/mdi/lightbulb-on.svg" width="20" /> <img src="https://api.iconify.design/mdi/lightbulb.svg" width="20" /> | on / off |
+| `lock` | <img src="https://api.iconify.design/mdi/lock.svg" width="20" /> <img src="https://api.iconify.design/mdi/lock-open-variant.svg" width="20" /> | locked / unlocked |
+| `door` | <img src="https://api.iconify.design/mdi/door-open.svg" width="20" /> <img src="https://api.iconify.design/mdi/door-closed.svg" width="20" /> | open / closed |
+| `window` | <img src="https://api.iconify.design/mdi/window-open.svg" width="20" /> <img src="https://api.iconify.design/mdi/window-closed.svg" width="20" /> | open / closed |
+| `leak` | <img src="https://api.iconify.design/mdi/water-alert.svg" width="20" /> <img src="https://api.iconify.design/mdi/water-check.svg" width="20" /> | leak / dry |
+| `media` | <img src="https://api.iconify.design/mdi/play-circle.svg" width="20" /> <img src="https://api.iconify.design/mdi/pause-circle.svg" width="20" /> <img src="https://api.iconify.design/mdi/stop-circle.svg" width="20" /> <img src="https://api.iconify.design/mdi/play-circle-outline.svg" width="20" /> | playing / paused / stopped / other |
+| `volume` | <img src="https://api.iconify.design/mdi/volume-off.svg" width="20" /> <img src="https://api.iconify.design/mdi/volume-low.svg" width="20" /> <img src="https://api.iconify.design/mdi/volume-medium.svg" width="20" /> <img src="https://api.iconify.design/mdi/volume-high.svg" width="20" /> | 0..100 or 0..1 |
 
 ### Built-in color templates
 
-- `roygbiv` (0..100)
-  - red `#ef4444` → orange `#f97316` → yellow `#eab308` → green `#22c55e` → blue `#3b82f6` → indigo `#6366f1` → violet `#a855f7`
-- `royg` (0..100)
-  - red `#ef4444` → yellow `#eab308` → green `#22c55e`
-- `on_off`
-  - on/open/playing/locked → `var(--state-icon-active-color, #f59e0b)`
-  - off/closed/etc → `var(--state-icon-color, #6b7280)`
+| Template | Preview |
+|---|---|
+| `roygbiv` | <img src="https://img.shields.io/badge/-%23ef4444-ef4444" /> <img src="https://img.shields.io/badge/-%23f97316-f97316" /> <img src="https://img.shields.io/badge/-%23eab308-eab308" /> <img src="https://img.shields.io/badge/-%2322c55e-22c55e" /> <img src="https://img.shields.io/badge/-%233b82f6-3b82f6" /> <img src="https://img.shields.io/badge/-%236366f1-6366f1" /> <img src="https://img.shields.io/badge/-%23a855f7-a855f7" /> |
+| `royg` | <img src="https://img.shields.io/badge/-%23ef4444-ef4444" /> <img src="https://img.shields.io/badge/-%23eab308-eab308" /> <img src="https://img.shields.io/badge/-%2322c55e-22c55e" /> |
+| `on_off` | <img src="https://img.shields.io/badge/on-active%20HA-f59e0b" /> <img src="https://img.shields.io/badge/off-inactive%20HA-6b7280" /> |
 
 > Note: custom templates from card config override built-ins when names are the same.
 
