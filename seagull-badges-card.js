@@ -66,6 +66,7 @@ class SeagullBadgesCard extends HTMLElement {
 
     const state = this._hass?.states?.[badge.entity]?.state;
 
+    const has = (k) => badge[k] !== undefined && badge[k] !== null;
     const eq = (a, b) => String(a) === String(b);
     const toArr = (v) => {
       if (Array.isArray(v)) return v;
@@ -81,37 +82,40 @@ class SeagullBadgesCard extends HTMLElement {
         }
         return [v];
       }
-      if (v === undefined || v === null) return [];
       return [v];
     };
 
-    const showValue = this._tpl(badge.show_value, badge, undefined);
-    if (showValue !== undefined && showValue !== null && !eq(state, showValue)) return false;
+    if (has("show_value")) {
+      const showValue = this._tpl(badge.show_value, badge, undefined);
+      if (!eq(state, showValue)) return false;
+    }
 
-    const showNotValue = this._tpl(badge.show_not_value, badge, undefined);
-    if (showNotValue !== undefined && showNotValue !== null && eq(state, showNotValue)) return false;
+    if (has("show_not_value")) {
+      const showNotValue = this._tpl(badge.show_not_value, badge, undefined);
+      if (eq(state, showNotValue)) return false;
+    }
 
-    const showIn = this._tpl(badge.show_in, badge, undefined);
-    if (showIn !== undefined && showIn !== null) {
+    if (has("show_in")) {
+      const showIn = this._tpl(badge.show_in, badge, undefined);
       const arr = toArr(showIn).map((v) => String(v));
       if (!arr.includes(String(state))) return false;
     }
 
-    const showNotIn = this._tpl(badge.show_not_in, badge, undefined);
-    if (showNotIn !== undefined && showNotIn !== null) {
+    if (has("show_not_in")) {
+      const showNotIn = this._tpl(badge.show_not_in, badge, undefined);
       const arr = toArr(showNotIn).map((v) => String(v));
       if (arr.includes(String(state))) return false;
     }
 
-    const showBelow = this._tpl(badge.show_below, badge, undefined);
-    if (showBelow !== undefined && showBelow !== null) {
+    if (has("show_below")) {
+      const showBelow = this._tpl(badge.show_below, badge, undefined);
       const nState = Number(state);
       const nBelow = Number(showBelow);
       if (Number.isNaN(nState) || Number.isNaN(nBelow) || !(nState < nBelow)) return false;
     }
 
-    const showAbove = this._tpl(badge.show_above, badge, undefined);
-    if (showAbove !== undefined && showAbove !== null) {
+    if (has("show_above")) {
+      const showAbove = this._tpl(badge.show_above, badge, undefined);
       const nState = Number(state);
       const nAbove = Number(showAbove);
       if (Number.isNaN(nState) || Number.isNaN(nAbove) || !(nState > nAbove)) return false;
