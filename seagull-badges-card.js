@@ -272,7 +272,7 @@ class SeagullBadgesCard extends HTMLElement {
           align-items: center;
           justify-content: center;
           flex: 0 0 auto;
-          margin-right: 1.5px;
+          margin-right: 3px;
         }
         .sg-sub-icon {
           --mdc-icon-size: 11px;
@@ -315,6 +315,9 @@ class SeagullBadgesCard extends HTMLElement {
         .sg-pill.sg-text-only {
           justify-content: center;
           padding: 0 14px;
+        }
+        .sg-pill.sg-no-text-icons {
+          padding-right: 8px;
         }
         .sg-extra {
           position: absolute;
@@ -378,15 +381,21 @@ class SeagullBadgesCard extends HTMLElement {
 
     const singleLine = (hasTitle && !hasSubtitle) || (!hasTitle && hasSubtitle);
 
-    const textHtml = hasTitle || hasSubtitle
+    const hasText = hasTitle || hasSubtitle;
+
+    const textHtml = hasText
       ? `<div class="sg-text ${hasTitle && hasSubtitle ? "" : "sg-single"} ${singleLine ? "sg-single-line" : ""}" style="color:${item.iconColor};">
            ${hasTitle ? `<div class="sg-title">${this._esc(item.title)}</div>` : ""}
            ${hasSubtitle ? `<div class="sg-subtitle">${this._esc(item.subtitle)}</div>` : ""}
          </div>`
       : "";
 
+    const pillClasses = ["sg-item", "sg-pill", item.icon ? "" : "sg-text-only", (!hasText && item.icon && item.subIcon) ? "sg-no-text-icons" : ""]
+      .filter(Boolean)
+      .join(" ");
+
     return `
-      <div class="sg-item sg-pill ${item.icon ? "" : "sg-text-only"}" data-sg-id="${id}" style="background:${this._withAlpha(item.iconColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.iconColor, 0.22)};">
+      <div class="${pillClasses}" data-sg-id="${id}" style="background:${this._withAlpha(item.iconColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.iconColor, 0.22)};">
         ${iconHtml}
         ${subIconHtml}
         ${textHtml}
