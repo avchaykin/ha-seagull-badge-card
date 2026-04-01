@@ -159,7 +159,7 @@ class SeagullBadgesCard extends HTMLElement {
       this._tpl(badge.color ?? badge.icon_color, badge, "#4b5563")
     ), badge);
 
-    const borderColor = this._normalizeColor(this._tpl(badge.border, badge, "transparent"), badge);
+    const borderColor = this._normalizeColor(this._tpl(badge.border, badge, iconColor || "#4b5563"), badge);
     const borderSize = Number(this._tpl(badge.border_size, badge, 0));
 
     const title = this._tpl(badge.title, badge, "");
