@@ -29,6 +29,7 @@ class SeagullBadgesCard extends HTMLElement {
       badge_size: config.badge_size ?? 50,
       debug: config.debug ?? false,
       show_all: config.show_all ?? false,
+      placeholder_text: config.placeholder_text ?? "No badges to display",
       ...config,
     };
   }
@@ -191,7 +192,9 @@ class SeagullBadgesCard extends HTMLElement {
 
   _render(items) {
     if (!items.length) {
-      return `<div style="padding:${this._config.padding}px;opacity:.65;">No badges to display</div>`;
+      const placeholder = this._str(this._config.placeholder_text ?? "");
+      if (!placeholder) return "";
+      return `<div style="padding:${this._config.padding}px;opacity:.65;">${this._esc(placeholder)}</div>`;
     }
 
     const gap = Number(this._config.gap) || 10;
