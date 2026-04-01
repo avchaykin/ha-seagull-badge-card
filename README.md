@@ -91,6 +91,8 @@ If `param` is omitted, default value is `states(entity)`.
 - `sub_icon` — optional middle icon (shown in a small circle between main icon and text)
 - `sub_icon_color` — template/string color for `sub_icon` (default: main icon color)
 - `color` — template/string; default `#4b5563`
+  - supports HA aliases: `primary`, `secondary`, `disabled`, `active`, `inactive`
+  - for direct HA vars use CSS syntax, e.g. `var(--primary-color)`
 - `color_template` — named color template reference (preferred over `color` when set)
 - `title` — template/string
 - `subtitle` — template/string

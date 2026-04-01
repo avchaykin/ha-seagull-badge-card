@@ -150,21 +150,21 @@ class SeagullBadgesCard extends HTMLElement {
       badge,
       this._tpl(badge.icon, badge, iconFallback)
     );
-    const iconColor = this._resolveNamedTemplate(
+    const iconColor = this._normalizeColor(this._resolveNamedTemplate(
       "color",
       badge.color_template,
       badge,
       this._tpl(badge.color ?? badge.icon_color, badge, "#4b5563")
-    );
+    ));
 
     const title = this._tpl(badge.title, badge, "");
     const subtitle = this._tpl(badge.subtitle, badge, "");
 
     const subIcon = this._tpl(badge.sub_icon, badge, "");
-    const subIconColor = this._tpl(badge.sub_icon_color, badge, iconColor || "#6b7280");
+    const subIconColor = this._normalizeColor(this._tpl(badge.sub_icon_color, badge, iconColor || "#6b7280"));
 
     const extraIcon = this._tpl(badge.badge ?? badge.extra_icon, badge, "");
-    const extraIconColor = this._tpl(badge.badge_color ?? badge.extra_icon_color, badge, "#6b7280");
+    const extraIconColor = this._normalizeColor(this._tpl(badge.badge_color ?? badge.extra_icon_color, badge, "#6b7280"));
 
     this._debug("badge:normalize", {
       entity: badge.entity,
@@ -750,18 +750,36 @@ class SeagullBadgesCard extends HTMLElement {
     return String(v);
   }
 
+  _normalizeColor(color) {
+    if (color === undefined || color === null) return color;
+    if (typeof color !== "string") return color;
+
+    const raw = color.trim();
+    const key = raw.toLowerCase();
+    const map = {
+      primary: "var(--primary-color)",
+      secondary: "var(--secondary-text-color)",
+      disabled: "var(--disabled-text-color)",
+      active: "var(--state-icon-active-color, var(--primary-color))",
+      inactive: "var(--state-icon-color, var(--secondary-text-color))",
+    };
+
+    return map[key] || raw;
+  }
+
   _withAlpha(color, alpha) {
-    if (!color) return `rgba(75,85,99,${alpha})`;
-    if (color.startsWith("#") && (color.length === 7 || color.length === 4)) {
-      const hex = color.length === 4
-        ? `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`
-        : color;
+    const normalized = this._normalizeColor(color);
+    if (!normalized) return `rgba(75,85,99,${alpha})`;
+    if (normalized.startsWith("#") && (normalized.length === 7 || normalized.length === 4)) {
+      const hex = normalized.length === 4
+        ? `#${normalized[1]}${normalized[1]}${normalized[2]}${normalized[2]}${normalized[3]}${normalized[3]}`
+        : normalized;
       const r = parseInt(hex.slice(1, 3), 16);
       const g = parseInt(hex.slice(3, 5), 16);
       const b = parseInt(hex.slice(5, 7), 16);
       return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
-    return `color-mix(in srgb, ${color} ${Math.round(alpha * 100)}%, transparent)`;
+    return `color-mix(in srgb, ${normalized} ${Math.round(alpha * 100)}%, transparent)`;
   }
 
   _esc(s) {
