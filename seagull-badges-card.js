@@ -26,6 +26,7 @@ class SeagullBadgesCard extends HTMLElement {
       badges: config.badges,
       gap: config.gap ?? 10,
       padding: config.padding ?? 4,
+      padding_y: config.padding_y ?? config.padding ?? 4,
       badge_size: config.badge_size ?? 50,
       debug: config.debug ?? false,
       show_all: config.show_all ?? false,
@@ -214,6 +215,8 @@ class SeagullBadgesCard extends HTMLElement {
 
     const gap = Number(this._config.gap) || 10;
     const padding = Number(this._config.padding) || 10;
+    const paddingY = Number(this._config.padding_y);
+    const effectivePaddingY = Number.isFinite(paddingY) ? paddingY : padding;
 
     const badgesHtml = items.map((item, index) => this._renderBadge(item, index)).join("");
     const debugHtml = this._config.debug
@@ -229,7 +232,7 @@ class SeagullBadgesCard extends HTMLElement {
           gap: ${gap}px;
           align-items: center;
           min-height: var(--sg-size);
-          padding: ${padding}px 8px;
+          padding: ${effectivePaddingY}px 8px;
         }
         .sg-item {
           min-width: 0;

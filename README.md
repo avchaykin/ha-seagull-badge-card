@@ -17,6 +17,7 @@ type: custom:seagull-badges-card
 gap: 10
 padding: 4
 badge_size: 50
+padding_y: 0
 badges:
   - entity: sensor.phone_battery
     icon_template: battery
@@ -70,6 +71,7 @@ Card-level template registries:
 - `show_all` — `true/false`; when `true`, all badges are shown in dashboard edit mode (ignores per-badge `show*` filters)
 - `placeholder_text` — text shown when no badges are visible; set empty string (`""`) to render nothing
 - `palette` — map of named colors. You can reuse these names in `color`, `sub_icon_color`, `badge_color`, and color templates
+- `padding_y` — top/bottom inner padding of badge row (set `0` for edge-touching layout). Defaults to `padding`
 
 `icon_template` / `color_template` value formats on each badge:
 
