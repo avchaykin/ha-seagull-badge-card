@@ -113,6 +113,18 @@ Group inheritance is now generic:
 - any parameter defined directly on a badge overrides group value
 - nested groups are supported (inheritance cascades)
 
+### `sub_icon_group`
+
+Group-level flag, default `false`.
+
+When `sub_icon_group: true`:
+
+- group is rendered as a **single badge**
+- main `icon` / `icon_template`, `title`, `subtitle` are taken from group-level config
+- group badge is shown if **at least one child badge** is visible by `show*` rules
+- `sub_icon` values are taken from visible child badges
+- multiple visible child sub-icons are rendered in a row
+
 Example:
 
 ```yaml

@@ -46,10 +46,19 @@ class SeagullBadgesCard extends HTMLElement {
       this.appendChild(this._card);
     }
 
-    const visible = this._expandBadges(this._config.badges || [])
-      .map((badge) => this._prepareBadge(badge))
+    const prepared = this._expandBadges(this._config.badges || [])
+      .map((badge) => this._prepareBadge(badge));
+
+    const normalVisible = prepared
+      .filter((badge) => !badge._sub_icon_group)
+      .filter((badge) => !badge._sub_icon_group_root)
       .filter((badge) => this._isBadgeVisible(badge))
       .map((badge) => this._normalizeBadge(badge));
+
+    const groupVisible = this._buildSubIconGroups(prepared)
+      .map((badge) => this._normalizeBadge(badge));
+
+    const visible = [...normalVisible, ...groupVisible];
 
     this._card.innerHTML = this._render(visible);
 
@@ -65,7 +74,7 @@ class SeagullBadgesCard extends HTMLElement {
     });
   }
 
-  _expandBadges(items, inherited = {}) {
+  _expandBadges(items, inherited = {}, ctx = {}) {
     const out = [];
 
     for (const item of items) {
@@ -77,12 +86,70 @@ class SeagullBadgesCard extends HTMLElement {
           if (k === "badges") continue;
           groupInherited[k] = v;
         }
-        out.push(...this._expandBadges(item.badges, groupInherited));
+
+        const isSubIconGroup = this._toBool(item.sub_icon_group, false);
+        const groupId = isSubIconGroup
+          ? `sg-group-${Math.random().toString(36).slice(2, 10)}`
+          : undefined;
+
+        if (isSubIconGroup) {
+          out.push({
+            ...groupInherited,
+            _sub_icon_group_root: true,
+            _sub_icon_group_id: groupId,
+          });
+        }
+
+        out.push(...this._expandBadges(item.badges, groupInherited, {
+          ...ctx,
+          subIconGroupId: groupId,
+        }));
         continue;
       }
 
       const merged = { ...inherited, ...item };
+      if (ctx.subIconGroupId) {
+        merged._sub_icon_group = true;
+        merged._sub_icon_group_id = ctx.subIconGroupId;
+      }
       out.push(merged);
+    }
+
+    return out;
+  }
+
+  _buildSubIconGroups(prepared) {
+    const roots = prepared.filter((b) => b._sub_icon_group_root && b._sub_icon_group_id);
+    const out = [];
+
+    for (const root of roots) {
+      const children = prepared.filter((b) => b._sub_icon_group && b._sub_icon_group_id === root._sub_icon_group_id);
+      const visibleChildren = children.filter((b) => this._isBadgeVisible(b));
+      if (!visibleChildren.length) continue;
+
+      const subIcons = visibleChildren
+        .map((b) => {
+          const icon = this._resolveNamedTemplate("icon", b.sub_icon_template, b, this._tpl(b.sub_icon, b, ""));
+          const color = this._normalizeColor(this._resolveNamedTemplate(
+            "color",
+            b.sub_icon_color_template,
+            b,
+            this._tpl(b.sub_icon_color, b, this._tpl(b.color ?? b.icon_color, b, "#6b7280"))
+          ), b);
+          if (!icon) return null;
+          return { icon, color };
+        })
+        .filter(Boolean);
+
+      if (!subIcons.length) continue;
+
+      out.push({
+        ...root,
+        _sub_icon_group: false,
+        sub_icon: subIcons[0].icon,
+        sub_icon_color: subIcons[0].color,
+        _sub_icons: subIcons,
+      });
     }
 
     return out;
@@ -247,6 +314,7 @@ class SeagullBadgesCard extends HTMLElement {
       titleColor,
       subtitleColor,
       subIcon,
+      subIcons: Array.isArray(badge._sub_icons) ? badge._sub_icons : undefined,
       subIconColor,
       subIconSize,
       subIconBg,
@@ -435,7 +503,7 @@ class SeagullBadgesCard extends HTMLElement {
   _renderBadge(item, index) {
     const hasTitle = !!item.title;
     const hasSubtitle = !!item.subtitle;
-    const hasSubIcon = !!item.subIcon;
+    const hasSubIcon = !!item.subIcon || (Array.isArray(item.subIcons) && item.subIcons.length > 0);
     const isCircle = !!item.icon && !hasTitle && !hasSubtitle && !hasSubIcon;
 
     const iconHtml = item.icon
@@ -446,13 +514,17 @@ class SeagullBadgesCard extends HTMLElement {
         : `<ha-icon class="sg-icon" style="color:${item.iconColor}" icon="${this._esc(item.icon)}"></ha-icon>`)
       : "";
 
-    const subIconHtml = item.subIcon
-      ? (item.subIconBg
-        ? `<span class="sg-sub-icon-bg" style="background:${this._withAlpha(item.subIconColor, 0.14)}; --sg-sub-icon-size:${item.subIconSize};">
-             <ha-icon class="sg-sub-icon" style="color:${item.subIconColor}" icon="${this._esc(item.subIcon)}"></ha-icon>
+    const subIcons = Array.isArray(item.subIcons) && item.subIcons.length
+      ? item.subIcons
+      : (item.subIcon ? [{ icon: item.subIcon, color: item.subIconColor }] : []);
+
+    const subIconHtml = subIcons
+      .map((si) => item.subIconBg
+        ? `<span class="sg-sub-icon-bg" style="background:${this._withAlpha(si.color, 0.14)}; --sg-sub-icon-size:${item.subIconSize};">
+             <ha-icon class="sg-sub-icon" style="color:${si.color}" icon="${this._esc(si.icon)}"></ha-icon>
            </span>`
-        : `<ha-icon class="sg-sub-icon sg-sub-icon-no-bg" style="color:${item.subIconColor}; --sg-sub-icon-size:${item.subIconSize};" icon="${this._esc(item.subIcon)}"></ha-icon>`)
-      : "";
+        : `<ha-icon class="sg-sub-icon sg-sub-icon-no-bg" style="color:${si.color}; --sg-sub-icon-size:${item.subIconSize};" icon="${this._esc(si.icon)}"></ha-icon>`)
+      .join("");
 
     const extraIconHtml = item.extraIcon
       ? `<span class="sg-extra" style="background:${this._withAlpha(item.extraIconColor, 0.14)};">
