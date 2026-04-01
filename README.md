@@ -152,6 +152,7 @@ Available helpers/variables inside template:
 - `state_attr(entity_id, attr)`
 - `is_state(entity_id, value)`
 - `round(value, digits)` — numeric rounding helper for title/subtitle/templates
+  - Jinja-style filter syntax is also supported: `{{ states(e[1])|round }}` / `{{ states(e[1])|round(1) }}`
 - `value` — input param for named templates (`icon_template` / `color_template`)
 - `template_name` — current named template id
 - `icon_templates` — alias for `config.icon_templates`

@@ -678,14 +678,21 @@ class SeagullBadgesCard extends HTMLElement {
       return Math.round(n * p) / p;
     };
 
-    const code = String(expr)
+    const toJsFilters = (input) => {
+      // minimal Jinja-like filter support: value|round and value|round(n)
+      return String(input)
+        .replace(/([^|\n]+?)\|\s*round\s*\(\s*([^)]*?)\s*\)/g, (_m, lhs, digits) => `round(${lhs.trim()}, ${digits.trim() || 0})`)
+        .replace(/([^|\n]+?)\|\s*round\b/g, (_m, lhs) => `round(${lhs.trim()})`);
+    };
+
+    const code = toJsFilters(String(expr)
       .trim()
       .replace(/\bnone\b/gi, "null")
       .replace(/\btrue\b/gi, "true")
       .replace(/\bfalse\b/gi, "false")
       .replace(/\band\b/gi, "&&")
       .replace(/\bor\b/gi, "||")
-      .replace(/\bnot\b/gi, "!");
+      .replace(/\bnot\b/gi, "!"));
 
     try {
       const fn = new Function(
