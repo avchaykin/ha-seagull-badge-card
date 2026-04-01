@@ -363,7 +363,24 @@ class SeagullBadgesCard extends HTMLElement {
     }
 
     const templates = this._config?.[`${kind}_templates`] || {};
-    const templateCode = templates[spec.name];
+
+    const normalizeKey = (s) => String(s ?? "")
+      .normalize("NFKC")
+      .replace(/\s+/g, "")
+      .toLowerCase();
+
+    let templateCode = templates[spec.name];
+    let matchedTemplateName = spec.name;
+
+    if (templateCode === undefined || templateCode === null) {
+      const wanted = normalizeKey(spec.name);
+      const fuzzy = Object.entries(templates).find(([k]) => normalizeKey(k) === wanted);
+      if (fuzzy) {
+        matchedTemplateName = fuzzy[0];
+        templateCode = fuzzy[1];
+      }
+    }
+
     if (templateCode === undefined || templateCode === null) {
       this._debug("template:skip", {
         kind,
@@ -382,12 +399,13 @@ class SeagullBadgesCard extends HTMLElement {
       ? defaultParam
       : this._tpl(spec.param, badge, defaultParam);
 
-    const resolved = this._tpl(templateCode, badge, fallback, { value: paramValue, template_name: spec.name });
+    const resolved = this._tpl(templateCode, badge, fallback, { value: paramValue, template_name: matchedTemplateName });
     const out = typeof resolved === "string" ? resolved.trim() : resolved;
 
     this._debug("template:resolved", {
       kind,
       templateName: spec.name,
+      matchedTemplateName,
       entity: badge?.entity,
       paramValue,
       resolved: out,
