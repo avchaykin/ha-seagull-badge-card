@@ -108,6 +108,36 @@ title: "{{ states(entity) === 'on' ? 'Active' : 'Idle' }}"
 subtitle: "{{ state_attr(entity, 'friendly_name') }}"
 ```
 
+## Auto-deploy after commit (SSH)
+
+This repo can auto-deploy `seagull-badges-card.js` to Home Assistant on every commit.
+
+Included files:
+
+- `scripts/deploy-to-ha.sh`
+- `.githooks/post-commit`
+
+Default target values (can be overridden via env vars):
+
+- `HA_HOST=192.168.1.184`
+- `HA_USER=avc`
+- `HA_KEY=~/.ssh/id_ed25519_openclaw_ha`
+- `HA_TARGET_FILE=/config/www/seagull-badges-card.js`
+
+Manual deploy:
+
+```bash
+./scripts/deploy-to-ha.sh
+```
+
+Post-commit hook is enabled via local git config:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+The hook does not block commits if deploy fails (it prints a warning).
+
 ## Behavior
 
 - Visible badges are laid out in a single row with equal width columns.
