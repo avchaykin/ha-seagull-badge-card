@@ -162,6 +162,8 @@ class SeagullBadgesCard extends HTMLElement {
 
     const subIcon = this._tpl(badge.sub_icon, badge, "");
     const subIconColor = this._normalizeColor(this._tpl(badge.sub_icon_color, badge, iconColor || "#6b7280"));
+    const subIconSize = Number(this._tpl(badge.sub_icon_size, badge, 0.5));
+    const subIconBg = this._toBool(this._tpl(badge.sub_icon_bg, badge, true), true);
 
     const extraIcon = this._tpl(badge.badge ?? badge.extra_icon, badge, "");
     const extraIconColor = this._normalizeColor(this._tpl(badge.badge_color ?? badge.extra_icon_color, badge, "#6b7280"));
@@ -182,6 +184,8 @@ class SeagullBadgesCard extends HTMLElement {
       subtitle: this._str(subtitle),
       subIcon,
       subIconColor,
+      subIconSize,
+      subIconBg,
       extraIcon,
       extraIconColor,
       tap_action: badge.tap_action ?? { action: "more-info" },
@@ -265,8 +269,8 @@ class SeagullBadgesCard extends HTMLElement {
           margin-right: 6px;
         }
         .sg-sub-icon-bg {
-          width: 16px;
-          height: 16px;
+          width: calc(var(--sg-size) * var(--sg-sub-icon-size, 0.5));
+          height: calc(var(--sg-size) * var(--sg-sub-icon-size, 0.5));
           border-radius: 9999px;
           display: inline-flex;
           align-items: center;
@@ -275,7 +279,10 @@ class SeagullBadgesCard extends HTMLElement {
           margin-right: 3px;
         }
         .sg-sub-icon {
-          --mdc-icon-size: 11px;
+          --mdc-icon-size: calc(var(--sg-size) * var(--sg-sub-icon-size, 0.5) * 0.7);
+        }
+        .sg-sub-icon-no-bg {
+          margin-right: 3px;
         }
         .sg-text {
           min-width: 0;
@@ -359,9 +366,11 @@ class SeagullBadgesCard extends HTMLElement {
       : "";
 
     const subIconHtml = item.subIcon
-      ? `<span class="sg-sub-icon-bg" style="background:${this._withAlpha(item.subIconColor, 0.14)};">
-           <ha-icon class="sg-sub-icon" style="color:${item.subIconColor}" icon="${this._esc(item.subIcon)}"></ha-icon>
-         </span>`
+      ? (item.subIconBg
+        ? `<span class="sg-sub-icon-bg" style="background:${this._withAlpha(item.subIconColor, 0.14)}; --sg-sub-icon-size:${item.subIconSize};">
+             <ha-icon class="sg-sub-icon" style="color:${item.subIconColor}" icon="${this._esc(item.subIcon)}"></ha-icon>
+           </span>`
+        : `<ha-icon class="sg-sub-icon sg-sub-icon-no-bg" style="color:${item.subIconColor}; --sg-sub-icon-size:${item.subIconSize};" icon="${this._esc(item.subIcon)}"></ha-icon>`)
       : "";
 
     const extraIconHtml = item.extraIcon
