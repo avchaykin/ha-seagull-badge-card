@@ -433,6 +433,8 @@ class SeagullBadgesCard extends HTMLElement {
         "is_state",
         "value",
         "template_name",
+        "icon_templates",
+        "color_templates",
         `return (${code});`
       );
       const out = fn(
@@ -444,7 +446,9 @@ class SeagullBadgesCard extends HTMLElement {
         state_attr,
         is_state,
         extraCtx.value,
-        extraCtx.template_name
+        extraCtx.template_name,
+        this._config?.icon_templates,
+        this._config?.color_templates
       );
       return out ?? "";
     } catch (e) {

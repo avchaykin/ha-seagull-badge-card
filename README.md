@@ -97,6 +97,8 @@ Available helpers/variables inside template:
 - `is_state(entity_id, value)`
 - `value` — input param for named templates (`icon_template` / `color_template`)
 - `template_name` — current named template id
+- `icon_templates` — alias for `config.icon_templates`
+- `color_templates` — alias for `config.color_templates`
 
 Examples:
 
