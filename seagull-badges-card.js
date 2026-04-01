@@ -361,7 +361,8 @@ class SeagullBadgesCard extends HTMLElement {
       ? defaultParam
       : this._tpl(spec.param, badge, defaultParam);
 
-    return this._tpl(templateCode, badge, fallback, { value: paramValue, template_name: spec.name });
+    const resolved = this._tpl(templateCode, badge, fallback, { value: paramValue, template_name: spec.name });
+    return typeof resolved === "string" ? resolved.trim() : resolved;
   }
 
   _evalExpr(expr, badge, extraCtx = {}) {
@@ -479,7 +480,8 @@ class SeagullBadgesCard extends HTMLElement {
       if (active()) out += token;
     }
 
-    return out === "" ? fallback : out;
+    const normalized = out.trim();
+    return normalized === "" ? fallback : normalized;
   }
 
   _tpl(value, badge, fallback = "", extraCtx = {}) {
