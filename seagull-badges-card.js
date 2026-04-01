@@ -800,12 +800,22 @@ class SeagullBadgesCard extends HTMLElement {
     let paramValue = rawParamValue;
     if (hasScale || hasOffset) {
       const nValue = Number(rawParamValue);
-      const nOffset = hasOffset ? Number(rawOffset) : 0;
-      const nScale = hasScale ? Number(rawScale) : 100;
-      const span = nScale - nOffset;
 
-      if (!Number.isNaN(nValue) && !Number.isNaN(nOffset) && !Number.isNaN(nScale) && span !== 0) {
-        paramValue = ((nValue - nOffset) / span) * 100;
+      let nMin;
+      let nMax;
+
+      if (Array.isArray(rawScale) && rawScale.length >= 2) {
+        nMin = Number(rawScale[0]);
+        nMax = Number(rawScale[1]);
+      } else {
+        nMin = hasOffset ? Number(rawOffset) : 0;
+        nMax = hasScale ? Number(rawScale) : 100;
+      }
+
+      const span = nMax - nMin;
+
+      if (!Number.isNaN(nValue) && !Number.isNaN(nMin) && !Number.isNaN(nMax) && span !== 0) {
+        paramValue = ((nValue - nMin) / span) * 100;
       }
     }
 

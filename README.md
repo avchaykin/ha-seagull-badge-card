@@ -81,6 +81,7 @@ Card-level template registries:
 
 - string: `battery`
 - object: `{ name: battery, param: "{{ states(entity) }}", scale: 100, offset: 0 }`
+- object (range form): `{ name: battery, param: "{{ states(entity) }}", scale: [400, 1200] }`
 - array: `[battery, "{{ states(entity) }}", 100, 0]`
 
 If `param` is omitted, default value is `states(entity)`.
@@ -100,9 +101,15 @@ badges:
     sub_icon_color: ha_primary
 ```
 
-If `scale` and/or `offset` are provided, template `value` is normalized to 0..100 with:
+If `scale` and/or `offset` are provided, template `value` is normalized to 0..100.
 
-`value = ((param - offset) / (scale - offset)) * 100`
+Preferred form:
+- `scale: [min, max]`
+- `value = ((param - min) / (max - min)) * 100`
+
+Legacy form (still supported):
+- `scale: max` + optional `offset: min`
+- `value = ((param - offset) / (scale - offset)) * 100`
 
 ## Badge groups
 
