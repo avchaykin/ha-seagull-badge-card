@@ -138,7 +138,16 @@ class SeagullBadgesCard extends HTMLElement {
             this._tpl(b.sub_icon_color, b, this._tpl(b.color ?? b.icon_color, b, "#6b7280"))
           ), b);
           if (!icon) return null;
-          return { icon, color };
+          return {
+            icon,
+            color,
+            entity: b.entity,
+            tap_action: b.tap_action ?? { action: "more-info" },
+            double_tap_action: b.double_tap_action ?? (b.secondary_entity
+              ? { action: "more-info", entity: b.secondary_entity }
+              : { action: "none" }),
+            hold_action: b.hold_action ?? { action: "none" },
+          };
         })
         .filter(Boolean);
 
@@ -528,11 +537,11 @@ class SeagullBadgesCard extends HTMLElement {
       : (item.subIcon ? [{ icon: item.subIcon, color: item.subIconColor }] : []);
 
     const subIconHtml = subIcons
-      .map((si) => item.subIconBg
-        ? `<span class="sg-sub-icon-bg" style="background:${this._withAlpha(si.color, 0.14)}; --sg-sub-icon-size:${item.subIconSize};">
+      .map((si, siIndex) => item.subIconBg
+        ? `<span class="sg-sub-icon-bg" data-sg-sub-index="${siIndex}" style="background:${this._withAlpha(si.color, 0.14)}; --sg-sub-icon-size:${item.subIconSize};">
              <ha-icon class="sg-sub-icon" style="color:${si.color}" icon="${this._esc(si.icon)}"></ha-icon>
            </span>`
-        : `<ha-icon class="sg-sub-icon sg-sub-icon-no-bg" style="color:${si.color}; --sg-sub-icon-size:${item.subIconSize};" icon="${this._esc(si.icon)}"></ha-icon>`)
+        : `<ha-icon class="sg-sub-icon sg-sub-icon-no-bg" data-sg-sub-index="${siIndex}" style="color:${si.color}; --sg-sub-icon-size:${item.subIconSize};" icon="${this._esc(si.icon)}"></ha-icon>`)
       .join("");
 
     const extraIconHtml = item.extraIcon
@@ -611,13 +620,30 @@ class SeagullBadgesCard extends HTMLElement {
     let holdFired = false;
     let tapTimer = null;
 
+    const actionItemFromEvent = (ev) => {
+      const idxRaw = ev?.target?.closest?.("[data-sg-sub-index]")?.getAttribute?.("data-sg-sub-index");
+      const idx = Number(idxRaw);
+      if (!Number.isNaN(idx) && Array.isArray(item.subIcons) && item.subIcons[idx]) {
+        const si = item.subIcons[idx];
+        return {
+          ...item,
+          entity: si.entity || item.entity,
+          tap_action: si.tap_action ?? item.tap_action,
+          double_tap_action: si.double_tap_action ?? item.double_tap_action,
+          hold_action: si.hold_action ?? item.hold_action,
+        };
+      }
+      return item;
+    };
+
     return {
-      onPointerDown: () => {
+      onPointerDown: (ev) => {
         holdFired = false;
         clearTimeout(holdTimer);
         holdTimer = setTimeout(() => {
           holdFired = true;
-          this._runAction(item, item.hold_action, "none");
+          const ai = actionItemFromEvent(ev);
+          this._runAction(ai, ai.hold_action, "none");
         }, 500);
       },
       onPointerUp: () => {
@@ -633,13 +659,15 @@ class SeagullBadgesCard extends HTMLElement {
         }
         clearTimeout(tapTimer);
         tapTimer = setTimeout(() => {
-          this._runAction(item, item.tap_action, "more-info");
+          const ai = actionItemFromEvent(ev);
+          this._runAction(ai, ai.tap_action, "more-info");
         }, tapDelayMs);
       },
       onDblClick: (ev) => {
         ev.preventDefault();
         clearTimeout(tapTimer);
-        this._runAction(item, item.double_tap_action, "none");
+        const ai = actionItemFromEvent(ev);
+        this._runAction(ai, ai.double_tap_action, "none");
       },
     };
   }

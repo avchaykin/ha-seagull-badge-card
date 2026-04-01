@@ -125,6 +125,7 @@ When `sub_icon_group: true`:
 - group badge is shown if **at least one child badge** is visible by `show*` rules
 - `sub_icon` values are taken from visible child badges
 - multiple visible child sub-icons are rendered in a row
+- tap/double-tap/hold on a specific sub-icon triggers that child badge actions
 
 Example:
 
