@@ -33,7 +33,14 @@ icon_templates:
       'mdi:battery'
     }}
 color_templates:
-  battery: "{{ Number(value) <= 15 ? '#ef4444' : Number(value) <= 35 ? '#f59e0b' : '#22c55e' }}"
+  battery: >-
+    {% if value <= 15 %}
+      #ef4444
+    {% elif value <= 35 %}
+      #f59e0b
+    {% else %}
+      #22c55e
+    {% endif %}
 badges:
   - entity: sensor.phone_battery
     show: "{{ true }}"
@@ -76,7 +83,7 @@ If `param` is omitted, default value is `states(entity)`.
 
 ### Templates
 
-Templates use mustache expressions in `{{ ... }}` format.
+Templates support expressions in `{{ ... }}` and conditional Jinja-style blocks `{% if ... %}...{% elif ... %}...{% else %}...{% endif %}`.
 
 Available helpers/variables inside template:
 

@@ -364,14 +364,7 @@ class SeagullBadgesCard extends HTMLElement {
     return this._tpl(templateCode, badge, fallback, { value: paramValue, template_name: spec.name });
   }
 
-  _tpl(value, badge, fallback = "", extraCtx = {}) {
-    if (value === undefined || value === null) return fallback;
-    if (typeof value !== "string") return value;
-
-    const t = value.trim();
-    const hasMustache = t.includes("{{") && t.includes("}}");
-    if (!hasMustache) return value;
-
+  _evalExpr(expr, badge, extraCtx = {}) {
     const hass = this._hass;
     const entity = badge?.entity;
 
@@ -387,48 +380,130 @@ class SeagullBadgesCard extends HTMLElement {
 
     const is_state = (entityId, expected) => states(entityId) === expected;
 
-    const renderExpr = (expr) => {
-      const code = expr.trim();
-      try {
-        const fn = new Function(
-          "hass",
-          "entity",
-          "badge",
-          "config",
-          "states",
-          "state_attr",
-          "is_state",
-          "value",
-          "template_name",
-          `return (${code});`
-        );
-        const out = fn(
-          hass,
-          entity,
-          badge,
-          this._config,
-          states,
-          state_attr,
-          is_state,
-          extraCtx.value,
-          extraCtx.template_name
-        );
-        return out ?? "";
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.warn("seagull-badges-card template error", e, code);
-        return "";
+    const code = String(expr)
+      .trim()
+      .replace(/\bnone\b/gi, "null")
+      .replace(/\btrue\b/gi, "true")
+      .replace(/\bfalse\b/gi, "false")
+      .replace(/\band\b/gi, "&&")
+      .replace(/\bor\b/gi, "||")
+      .replace(/\bnot\b/gi, "!");
+
+    try {
+      const fn = new Function(
+        "hass",
+        "entity",
+        "badge",
+        "config",
+        "states",
+        "state_attr",
+        "is_state",
+        "value",
+        "template_name",
+        `return (${code});`
+      );
+      const out = fn(
+        hass,
+        entity,
+        badge,
+        this._config,
+        states,
+        state_attr,
+        is_state,
+        extraCtx.value,
+        extraCtx.template_name
+      );
+      return out ?? "";
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn("seagull-badges-card template error", e, code);
+      return "";
+    }
+  }
+
+  _tplJinja(template, badge, fallback = "", extraCtx = {}) {
+    const tokens = String(template).split(/(\{\%[\s\S]*?\%\}|\{\{[\s\S]*?\}\})/g).filter(Boolean);
+    const stack = [];
+
+    const active = () => stack.every((f) => f.active);
+    let out = "";
+
+    for (const token of tokens) {
+      if (token.startsWith("{{") && token.endsWith("}}")) {
+        if (!active()) continue;
+        const expr = token.slice(2, -2);
+        const v = this._evalExpr(expr, badge, extraCtx);
+        out += (v === undefined || v === null) ? "" : String(v);
+        continue;
       }
-    };
+
+      if (token.startsWith("{%") && token.endsWith("%}")) {
+        const raw = token.slice(2, -2).trim();
+
+        if (raw.startsWith("if ")) {
+          const parentActive = active();
+          const matched = parentActive && this._toBool(this._evalExpr(raw.slice(3), badge, extraCtx), false);
+          stack.push({ parentActive, matched, active: matched });
+          continue;
+        }
+
+        if (raw.startsWith("elif ")) {
+          const top = stack[stack.length - 1];
+          if (!top) continue;
+          if (top.matched) {
+            top.active = false;
+          } else {
+            const ok = top.parentActive && this._toBool(this._evalExpr(raw.slice(5), badge, extraCtx), false);
+            top.active = ok;
+            if (ok) top.matched = true;
+          }
+          continue;
+        }
+
+        if (raw === "else") {
+          const top = stack[stack.length - 1];
+          if (!top) continue;
+          top.active = top.parentActive && !top.matched;
+          top.matched = true;
+          continue;
+        }
+
+        if (raw === "endif") {
+          stack.pop();
+          continue;
+        }
+
+        continue;
+      }
+
+      if (active()) out += token;
+    }
+
+    return out === "" ? fallback : out;
+  }
+
+  _tpl(value, badge, fallback = "", extraCtx = {}) {
+    if (value === undefined || value === null) return fallback;
+    if (typeof value !== "string") return value;
+
+    const t = value.trim();
+    const hasJinjaBlocks = t.includes("{%") && t.includes("%}");
+    const hasMustache = t.includes("{{") && t.includes("}}");
+
+    if (hasJinjaBlocks) {
+      return this._tplJinja(value, badge, fallback, extraCtx);
+    }
+
+    if (!hasMustache) return value;
 
     const onlyExpr = t.match(/^\{\{([\s\S]+)\}\}$/);
     if (onlyExpr) {
-      const out = renderExpr(onlyExpr[1]);
+      const out = this._evalExpr(onlyExpr[1], badge, extraCtx);
       return out === "" ? fallback : out;
     }
 
     const out = value.replace(/\{\{([\s\S]*?)\}\}/g, (_m, expr) => {
-      const v = renderExpr(expr);
+      const v = this._evalExpr(expr, badge, extraCtx);
       return v === undefined || v === null ? "" : String(v);
     });
     return out;
