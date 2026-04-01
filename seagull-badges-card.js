@@ -193,12 +193,14 @@ class SeagullBadgesCard extends HTMLElement {
       badge,
       this._tpl(badge.icon, badge, iconFallback)
     );
-    const iconColor = this._normalizeColor(this._resolveNamedTemplate(
+    const bgColor = this._normalizeColor(this._resolveNamedTemplate(
       "color",
       badge.color_template,
       badge,
-      this._tpl(badge.color ?? badge.icon_color, badge, "#4b5563")
+      this._tpl(badge.color, badge, "#4b5563")
     ), badge);
+
+    const iconColor = this._normalizeColor(this._tpl(badge.icon_color, badge, bgColor || "#4b5563"), badge);
 
     const borderColor = this._normalizeColor(this._tpl(badge.border, badge, iconColor || "#4b5563"), badge);
     const borderSize = Number(this._tpl(badge.border_size, badge, 0));
@@ -228,6 +230,7 @@ class SeagullBadgesCard extends HTMLElement {
       entity: badge.entity,
       icon,
       iconColor,
+      bgColor,
       iconTemplate: badge.icon_template,
       colorTemplate: badge.color_template,
     });
@@ -236,6 +239,7 @@ class SeagullBadgesCard extends HTMLElement {
       entity: badge.entity || "",
       icon,
       iconColor,
+      bgColor,
       title: this._str(title),
       subtitle: this._str(subtitle),
       subIcon,
@@ -432,7 +436,7 @@ class SeagullBadgesCard extends HTMLElement {
 
     const iconHtml = item.icon
       ? (isCircle
-        ? `<span class="sg-icon-bg" style="background:${this._withAlpha(item.iconColor, 0.14)};">
+        ? `<span class="sg-icon-bg" style="background:${this._withAlpha(item.bgColor, 0.14)};">
              <ha-icon class="sg-icon" style="color:${item.iconColor}" icon="${this._esc(item.icon)}"></ha-icon>
            </span>`
         : `<ha-icon class="sg-icon" style="color:${item.iconColor}" icon="${this._esc(item.icon)}"></ha-icon>`)
@@ -456,7 +460,7 @@ class SeagullBadgesCard extends HTMLElement {
 
     if (isCircle) {
       return `
-        <div class="sg-item sg-circle" data-sg-id="${id}" style="--sg-hover-bg:${this._withAlpha(item.iconColor, 0.22)};border:${item.borderSize}px solid ${this._esc(item.borderColor)};">
+        <div class="sg-item sg-circle" data-sg-id="${id}" style="--sg-hover-bg:${this._withAlpha(item.bgColor, 0.22)};border:${item.borderSize}px solid ${this._esc(item.borderColor)};">
           ${iconHtml}
           ${extraIconHtml}
         </div>
@@ -479,7 +483,7 @@ class SeagullBadgesCard extends HTMLElement {
       .join(" ");
 
     return `
-      <div class="${pillClasses}" data-sg-id="${id}" style="background:${this._withAlpha(item.iconColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.iconColor, 0.22)};border:${item.borderSize}px solid ${this._esc(item.borderColor)};">
+      <div class="${pillClasses}" data-sg-id="${id}" style="background:${this._withAlpha(item.bgColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.bgColor, 0.22)};border:${item.borderSize}px solid ${this._esc(item.borderColor)};">
         ${iconHtml}
         ${subIconHtml}
         ${textHtml}
