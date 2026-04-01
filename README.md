@@ -76,6 +76,12 @@ If `param` is omitted, default value is `states(entity)`.
 
 - `entity` — entity id used inside templates (`entity` variable)
 - `show` — template/boolean; if false badge is hidden
+- `show_value` — show only if `states(entity)` equals this value
+- `show_not_value` — show only if `states(entity)` is not equal to this value
+- `show_in` — show only if `states(entity)` is in provided array
+- `show_not_in` — show only if `states(entity)` is not in provided array
+- `show_below` — show only if numeric `states(entity)` is below this number
+- `show_above` — show only if numeric `states(entity)` is above this number
 - `icon` — left icon (mdi)
 - `icon_template` — named icon template reference (preferred over `icon` when set)
 - `color` — template/string; default `#4b5563`
@@ -110,6 +116,13 @@ Examples:
 
 ```yaml
 show: "{{ states(entity) !== 'unavailable' }}"
+show_value: on
+show_not_value: unavailable
+show_in: ["on", "playing", "home"]
+show_not_in: ["unknown", "unavailable"]
+show_below: 30
+show_above: 10
+
 title: "{{ states(entity) === 'on' ? 'Active' : 'Idle' }}"
 subtitle: "{{ state_attr(entity, 'friendly_name') }}"
 ```
