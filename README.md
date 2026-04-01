@@ -56,6 +56,8 @@ You can use these without defining `icon_templates` / `color_templates` manually
 |---|---|
 | `roygbiv` | <img src="https://img.shields.io/badge/-%23ef4444-ef4444" /> <img src="https://img.shields.io/badge/-%23f97316-f97316" /> <img src="https://img.shields.io/badge/-%23eab308-eab308" /> <img src="https://img.shields.io/badge/-%2322c55e-22c55e" /> <img src="https://img.shields.io/badge/-%233b82f6-3b82f6" /> <img src="https://img.shields.io/badge/-%236366f1-6366f1" /> <img src="https://img.shields.io/badge/-%23a855f7-a855f7" /> |
 | `royg` | <img src="https://img.shields.io/badge/-%23ef4444-ef4444" /> <img src="https://img.shields.io/badge/-%23eab308-eab308" /> <img src="https://img.shields.io/badge/-%2322c55e-22c55e" /> |
+| `iroygbiv` | <img src="https://img.shields.io/badge/-%23a855f7-a855f7" /> <img src="https://img.shields.io/badge/-%236366f1-6366f1" /> <img src="https://img.shields.io/badge/-%233b82f6-3b82f6" /> <img src="https://img.shields.io/badge/-%2322c55e-22c55e" /> <img src="https://img.shields.io/badge/-%23eab308-eab308" /> <img src="https://img.shields.io/badge/-%23f97316-f97316" /> <img src="https://img.shields.io/badge/-%23ef4444-ef4444" /> |
+| `iroyg` | <img src="https://img.shields.io/badge/-%2322c55e-22c55e" /> <img src="https://img.shields.io/badge/-%23eab308-eab308" /> <img src="https://img.shields.io/badge/-%23ef4444-ef4444" /> |
 | `on_off` | <img src="https://img.shields.io/badge/on-active%20HA-f59e0b" /> <img src="https://img.shields.io/badge/off-inactive%20HA-6b7280" /> |
 
 > Note: custom templates from card config override built-ins when names are the same.
@@ -71,10 +73,14 @@ Card-level template registries:
 `icon_template` / `color_template` value formats on each badge:
 
 - string: `battery`
-- object: `{ name: battery, param: "{{ states(entity) }}" }`
-- array: `[battery, "{{ states(entity) }}"]`
+- object: `{ name: battery, param: "{{ states(entity) }}", scale: 100, offset: 0 }`
+- array: `[battery, "{{ states(entity) }}", 100, 0]`
 
 If `param` is omitted, default value is `states(entity)`.
+
+If `scale` and/or `offset` are provided, template `value` is normalized to 0..100 with:
+
+`value = ((param - offset) / (scale - offset)) * 100`
 
 ## Badge fields
 

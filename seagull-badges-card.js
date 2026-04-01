@@ -470,14 +470,21 @@ class SeagullBadgesCard extends HTMLElement {
 
   _parseNamedTemplateSpec(spec) {
     if (!spec) return null;
-    if (typeof spec === "string") return { name: spec.trim(), param: undefined };
+    if (typeof spec === "string") return { name: spec.trim(), param: undefined, scale: undefined, offset: undefined };
     if (Array.isArray(spec)) {
-      return { name: String(spec[0] ?? "").trim(), param: spec[1] };
+      return {
+        name: String(spec[0] ?? "").trim(),
+        param: spec[1],
+        scale: spec[2],
+        offset: spec[3],
+      };
     }
     if (typeof spec === "object") {
       return {
         name: String(spec.name ?? spec.template ?? "").trim(),
         param: spec.param ?? spec.value,
+        scale: spec.scale,
+        offset: spec.offset,
       };
     }
     return null;
@@ -502,7 +509,9 @@ class SeagullBadgesCard extends HTMLElement {
     if (kind === "color") {
       return {
         roygbiv: "{{ Number(value) < 15 ? '#ef4444' : Number(value) < 30 ? '#f97316' : Number(value) < 45 ? '#eab308' : Number(value) < 60 ? '#22c55e' : Number(value) < 75 ? '#3b82f6' : Number(value) < 90 ? '#6366f1' : '#a855f7' }}",
+        iroygbiv: "{{ Number(value) < 15 ? '#a855f7' : Number(value) < 30 ? '#6366f1' : Number(value) < 45 ? '#3b82f6' : Number(value) < 60 ? '#22c55e' : Number(value) < 75 ? '#eab308' : Number(value) < 90 ? '#f97316' : '#ef4444' }}",
         royg: "{{ Number(value) < 35 ? '#ef4444' : Number(value) < 70 ? '#eab308' : '#22c55e' }}",
+        iroyg: "{{ Number(value) < 35 ? '#22c55e' : Number(value) < 70 ? '#eab308' : '#ef4444' }}",
         on_off: "{{ ['on','open','playing','locked'].includes(String(value).toLowerCase()) ? 'var(--state-icon-active-color, #f59e0b)' : 'var(--state-icon-color, #6b7280)' }}",
       };
     }
@@ -553,9 +562,27 @@ class SeagullBadgesCard extends HTMLElement {
     const defaultParam = badge?.entity && this._hass?.states?.[badge.entity]
       ? this._hass.states[badge.entity].state
       : undefined;
-    const paramValue = spec.param === undefined
+    const rawParamValue = spec.param === undefined
       ? defaultParam
       : this._tpl(spec.param, badge, defaultParam);
+
+    const rawScale = spec.scale === undefined ? undefined : this._tpl(spec.scale, badge, undefined);
+    const rawOffset = spec.offset === undefined ? undefined : this._tpl(spec.offset, badge, undefined);
+
+    const hasScale = rawScale !== undefined && rawScale !== null && rawScale !== "";
+    const hasOffset = rawOffset !== undefined && rawOffset !== null && rawOffset !== "";
+
+    let paramValue = rawParamValue;
+    if (hasScale || hasOffset) {
+      const nValue = Number(rawParamValue);
+      const nOffset = hasOffset ? Number(rawOffset) : 0;
+      const nScale = hasScale ? Number(rawScale) : 100;
+      const span = nScale - nOffset;
+
+      if (!Number.isNaN(nValue) && !Number.isNaN(nOffset) && !Number.isNaN(nScale) && span !== 0) {
+        paramValue = ((nValue - nOffset) / span) * 100;
+      }
+    }
 
     const resolved = this._tpl(templateCode, badge, fallback, { value: paramValue, template_name: matchedTemplateName });
     const out = typeof resolved === "string" ? resolved.trim() : resolved;
@@ -565,7 +592,10 @@ class SeagullBadgesCard extends HTMLElement {
       templateName: spec.name,
       matchedTemplateName,
       entity: badge?.entity,
+      rawParamValue,
       paramValue,
+      scale: rawScale,
+      offset: rawOffset,
       resolved: out,
       fallback,
     });
