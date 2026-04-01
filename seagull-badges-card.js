@@ -126,6 +126,7 @@ class SeagullBadgesCard extends HTMLElement {
           grid-template-columns: repeat(${items.length}, minmax(0, 1fr));
           gap: ${gap}px;
           align-items: center;
+          min-height: var(--sg-size);
           padding: ${padding}px 8px;
         }
         .sg-item {
