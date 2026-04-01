@@ -135,6 +135,7 @@ If `scale` and/or `offset` are provided, template `value` is normalized to 0..10
 - `badge_color` — template/string for badge icon color (default: main icon color)
 - `tap_action` — click action (default: `more-info`)
 - `double_tap_action` — double click action (default: `none`)
+  - when `entity` is an array and second entity exists, default becomes `more-info` for `e[1]`
 - `hold_action` — hold action (default: `none`)
 
 ### Templates

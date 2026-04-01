@@ -72,10 +72,12 @@ class SeagullBadgesCard extends HTMLElement {
 
     const e = entities.map((id) => String(id));
     const entity = e[0] || "";
+    const secondary_entity = e[1] || "";
 
     return {
       ...badge,
       entity,
+      secondary_entity,
       e,
     };
   }
@@ -222,7 +224,9 @@ class SeagullBadgesCard extends HTMLElement {
       extraIcon,
       extraIconColor,
       tap_action: badge.tap_action ?? { action: "more-info" },
-      double_tap_action: badge.double_tap_action ?? { action: "none" },
+      double_tap_action: badge.double_tap_action ?? (badge.secondary_entity
+        ? { action: "more-info", entity: badge.secondary_entity }
+        : { action: "none" }),
       hold_action: badge.hold_action ?? { action: "none" },
     };
   }
@@ -474,11 +478,14 @@ class SeagullBadgesCard extends HTMLElement {
     if (action === "none" || action === "nothing") return;
 
     if (action === "more-info") {
-      if (!item.entity) return;
+      const targetEntity = (typeof actionCfg === "object" && actionCfg?.entity)
+        ? String(actionCfg.entity)
+        : item.entity;
+      if (!targetEntity) return;
       this.dispatchEvent(new CustomEvent("hass-more-info", {
         bubbles: true,
         composed: true,
-        detail: { entityId: item.entity }
+        detail: { entityId: targetEntity }
       }));
       return;
     }
