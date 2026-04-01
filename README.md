@@ -60,6 +60,7 @@ You can use these without defining `icon_templates` / `color_templates` manually
 | `iroygbiv` | <img src="https://img.shields.io/badge/-%23a855f7-a855f7" /> <img src="https://img.shields.io/badge/-%236366f1-6366f1" /> <img src="https://img.shields.io/badge/-%233b82f6-3b82f6" /> <img src="https://img.shields.io/badge/-%2322c55e-22c55e" /> <img src="https://img.shields.io/badge/-%23eab308-eab308" /> <img src="https://img.shields.io/badge/-%23f97316-f97316" /> <img src="https://img.shields.io/badge/-%23ef4444-ef4444" /> |
 | `iroyg` | <img src="https://img.shields.io/badge/-%2322c55e-22c55e" /> <img src="https://img.shields.io/badge/-%23eab308-eab308" /> <img src="https://img.shields.io/badge/-%23ef4444-ef4444" /> |
 | `temperature` | <img src="https://img.shields.io/badge/≤0°C-3b82f6" /> <img src="https://img.shields.io/badge/≤10°C-06b6d4" /> <img src="https://img.shields.io/badge/≤20°C-22c55e" /> <img src="https://img.shields.io/badge/≤28°C-eab308" /> <img src="https://img.shields.io/badge/≤35°C-f97316" /> <img src="https://img.shields.io/badge/>35°C-ef4444" /> |
+| `room_temperature` | <img src="https://img.shields.io/badge/<16°C-3b82f6" /> <img src="https://img.shields.io/badge/18..22°C-comfort-84cc16" /> <img src="https://img.shields.io/badge/>27°C-ef4444" /> |
 | `on_off` | <img src="https://img.shields.io/badge/on-active%20HA-f59e0b" /> <img src="https://img.shields.io/badge/off-inactive%20HA-6b7280" /> |
 
 > Note: custom templates from card config override built-ins when names are the same.
