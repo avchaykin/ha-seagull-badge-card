@@ -2,18 +2,12 @@ class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
     return {
       type: "custom:seagull-badges-card",
-      icon_templates: {
-        battery: "{{ Number(value) <= 15 ? 'mdi:battery-10' : Number(value) <= 45 ? 'mdi:battery-40' : Number(value) <= 75 ? 'mdi:battery-70' : 'mdi:battery' }}"
-      },
-      color_templates: {
-        battery: "{{ Number(value) <= 15 ? '#ef4444' : Number(value) <= 35 ? '#f59e0b' : '#22c55e' }}"
-      },
       badges: [
         {
           entity: "sensor.phone_battery",
           show: "{{ true }}",
           icon_template: "battery",
-          color_template: "battery",
+          color_template: "royg",
           title: "Phone",
           subtitle: "{{ states(entity) + '%' }}",
           badge: "mdi:check-circle",
@@ -371,6 +365,31 @@ class SeagullBadgesCard extends HTMLElement {
     return null;
   }
 
+  _builtinTemplates(kind) {
+    if (kind === "icon") {
+      return {
+        battery: "{{ Number(value) <= 5 ? 'mdi:battery-alert-variant-outline' : Number(value) <= 15 ? 'mdi:battery-10' : Number(value) <= 25 ? 'mdi:battery-20' : Number(value) <= 35 ? 'mdi:battery-30' : Number(value) <= 45 ? 'mdi:battery-40' : Number(value) <= 55 ? 'mdi:battery-50' : Number(value) <= 65 ? 'mdi:battery-60' : Number(value) <= 75 ? 'mdi:battery-70' : Number(value) <= 85 ? 'mdi:battery-80' : Number(value) <= 95 ? 'mdi:battery-90' : 'mdi:battery' }}",
+        light: "{{ ['on','playing','home','open'].includes(String(value).toLowerCase()) ? 'mdi:lightbulb-on' : 'mdi:lightbulb' }}",
+        lock: "{{ ['locked','lock','on'].includes(String(value).toLowerCase()) ? 'mdi:lock' : 'mdi:lock-open-variant' }}",
+        door: "{{ ['open','on','opening'].includes(String(value).toLowerCase()) ? 'mdi:door-open' : 'mdi:door-closed' }}",
+        window: "{{ ['open','on','opening'].includes(String(value).toLowerCase()) ? 'mdi:window-open' : 'mdi:window-closed' }}",
+        leak: "{{ ['on','wet','leak','detected','problem'].includes(String(value).toLowerCase()) ? 'mdi:water-alert' : 'mdi:water-check' }}",
+        media: "{{ String(value).toLowerCase() === 'playing' ? 'mdi:play-circle' : String(value).toLowerCase() === 'paused' ? 'mdi:pause-circle' : String(value).toLowerCase() === 'stopped' ? 'mdi:stop-circle' : 'mdi:play-circle-outline' }}",
+        volume: "{{ (Number(value) <= 1 ? Number(value) * 100 : Number(value)) <= 0 ? 'mdi:volume-off' : (Number(value) <= 1 ? Number(value) * 100 : Number(value)) <= 33 ? 'mdi:volume-low' : (Number(value) <= 1 ? Number(value) * 100 : Number(value)) <= 66 ? 'mdi:volume-medium' : 'mdi:volume-high' }}",
+      };
+    }
+
+    if (kind === "color") {
+      return {
+        roygbiv: "{{ Number(value) < 15 ? '#ef4444' : Number(value) < 30 ? '#f97316' : Number(value) < 45 ? '#eab308' : Number(value) < 60 ? '#22c55e' : Number(value) < 75 ? '#3b82f6' : Number(value) < 90 ? '#6366f1' : '#a855f7' }}",
+        royg: "{{ Number(value) < 35 ? '#ef4444' : Number(value) < 70 ? '#eab308' : '#22c55e' }}",
+        on_off: "{{ ['on','open','playing','locked'].includes(String(value).toLowerCase()) ? 'var(--state-icon-active-color, #f59e0b)' : 'var(--state-icon-color, #6b7280)' }}",
+      };
+    }
+
+    return {};
+  }
+
   _resolveNamedTemplate(kind, templateSpec, badge, fallback = "") {
     const spec = this._parseNamedTemplateSpec(templateSpec);
     if (!spec?.name) {
@@ -378,7 +397,10 @@ class SeagullBadgesCard extends HTMLElement {
       return fallback;
     }
 
-    const templates = this._config?.[`${kind}_templates`] || {};
+    const templates = {
+      ...this._builtinTemplates(kind),
+      ...(this._config?.[`${kind}_templates`] || {}),
+    };
 
     const normalizeKey = (s) => String(s ?? "")
       .normalize("NFKC")

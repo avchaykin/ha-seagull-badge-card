@@ -17,40 +17,46 @@ type: custom:seagull-badges-card
 gap: 10
 padding: 4
 badge_size: 50
-icon_templates:
-  battery: >-
-    {{
-      Number(value) <= 5 ? 'mdi:battery-alert-variant-outline' :
-      Number(value) <= 15 ? 'mdi:battery-10' :
-      Number(value) <= 25 ? 'mdi:battery-20' :
-      Number(value) <= 35 ? 'mdi:battery-30' :
-      Number(value) <= 45 ? 'mdi:battery-40' :
-      Number(value) <= 55 ? 'mdi:battery-50' :
-      Number(value) <= 65 ? 'mdi:battery-60' :
-      Number(value) <= 75 ? 'mdi:battery-70' :
-      Number(value) <= 85 ? 'mdi:battery-80' :
-      Number(value) <= 95 ? 'mdi:battery-90' :
-      'mdi:battery'
-    }}
-color_templates:
-  battery: >-
-    {% if value <= 15 %}
-      #ef4444
-    {% elif value <= 35 %}
-      #f59e0b
-    {% else %}
-      #22c55e
-    {% endif %}
 badges:
   - entity: sensor.phone_battery
-    show: "{{ true }}"
     icon_template: battery
-    color_template: battery
+    color_template: royg
     title: Phone
     subtitle: "{{ states(entity) + '%' }}"
-    badge: mdi:check-circle
-    badge_color: '#16a34a'
+
+  - entity: light.kitchen
+    icon_template: light
+    color_template: on_off
+    title: Kitchen
 ```
+
+
+## Built-in named templates
+
+You can use these without defining `icon_templates` / `color_templates` manually.
+
+### Built-in icon templates
+
+- `battery` → `mdi:battery-alert-variant-outline`, `mdi:battery-10..90`, `mdi:battery` (value 0..100)
+- `light` → `mdi:lightbulb-on` / `mdi:lightbulb`
+- `lock` → `mdi:lock` / `mdi:lock-open-variant`
+- `door` → `mdi:door-open` / `mdi:door-closed`
+- `window` → `mdi:window-open` / `mdi:window-closed`
+- `leak` → `mdi:water-alert` / `mdi:water-check`
+- `media` → `mdi:play-circle`, `mdi:pause-circle`, `mdi:stop-circle`, `mdi:play-circle-outline`
+- `volume` → `mdi:volume-off`, `mdi:volume-low`, `mdi:volume-medium`, `mdi:volume-high`
+
+### Built-in color templates
+
+- `roygbiv` (0..100)
+  - red `#ef4444` → orange `#f97316` → yellow `#eab308` → green `#22c55e` → blue `#3b82f6` → indigo `#6366f1` → violet `#a855f7`
+- `royg` (0..100)
+  - red `#ef4444` → yellow `#eab308` → green `#22c55e`
+- `on_off`
+  - on/open/playing/locked → `var(--state-icon-active-color, #f59e0b)`
+  - off/closed/etc → `var(--state-icon-color, #6b7280)`
+
+> Note: custom templates from card config override built-ins when names are the same.
 
 Card-level template registries:
 
