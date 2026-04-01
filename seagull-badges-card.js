@@ -333,13 +333,13 @@ class SeagullBadgesCard extends HTMLElement {
 
   _parseNamedTemplateSpec(spec) {
     if (!spec) return null;
-    if (typeof spec === "string") return { name: spec, param: undefined };
+    if (typeof spec === "string") return { name: spec.trim(), param: undefined };
     if (Array.isArray(spec)) {
-      return { name: spec[0], param: spec[1] };
+      return { name: String(spec[0] ?? "").trim(), param: spec[1] };
     }
     if (typeof spec === "object") {
       return {
-        name: spec.name ?? spec.template,
+        name: String(spec.name ?? spec.template ?? "").trim(),
         param: spec.param ?? spec.value,
       };
     }
