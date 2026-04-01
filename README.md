@@ -151,6 +151,7 @@ Available helpers/variables inside template:
 - `states(entity_id)`
 - `state_attr(entity_id, attr)`
 - `is_state(entity_id, value)`
+- `round(value, digits)` — numeric rounding helper for title/subtitle/templates
 - `value` — input param for named templates (`icon_template` / `color_template`)
 - `template_name` — current named template id
 - `icon_templates` — alias for `config.icon_templates`
@@ -168,7 +169,7 @@ show_below: 30
 show_above: 10
 
 title: "{{ states(entity) === 'on' ? 'Active' : 'Idle' }}"
-subtitle: "{{ state_attr(entity, 'friendly_name') }}"
+subtitle: "{{ round(Number(states(entity)), 1) + '°C' }}"
 # multi-entity example
 # entity: [sensor.temp_living, sensor.humidity_living]
 # title: "{{ states(e[0]) + '°' }}"

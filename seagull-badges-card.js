@@ -669,6 +669,14 @@ class SeagullBadgesCard extends HTMLElement {
     };
 
     const is_state = (entityId, expected) => states(entityId) === expected;
+    const round = (val, digits = 0) => {
+      const n = Number(val);
+      const d = Number(digits);
+      if (Number.isNaN(n)) return val;
+      if (Number.isNaN(d)) return Math.round(n);
+      const p = 10 ** Math.max(0, d);
+      return Math.round(n * p) / p;
+    };
 
     const code = String(expr)
       .trim()
@@ -689,6 +697,7 @@ class SeagullBadgesCard extends HTMLElement {
         "states",
         "state_attr",
         "is_state",
+        "round",
         "value",
         "template_name",
         "icon_templates",
@@ -704,6 +713,7 @@ class SeagullBadgesCard extends HTMLElement {
         states,
         state_attr,
         is_state,
+        round,
         extraCtx.value,
         extraCtx.template_name,
         this._config?.icon_templates,
