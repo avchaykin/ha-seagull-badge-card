@@ -103,9 +103,40 @@ If `scale` and/or `offset` are provided, template `value` is normalized to 0..10
 
 `value = ((param - offset) / (scale - offset)) * 100`
 
+## Badge groups
+
+Inside `badges`, you can define a group object with nested `badges`.
+
+Supported inherited group-level params:
+
+- `color`
+- `color_template`
+- `sub_icon_color`
+- `sub_icon_color_template`
+- `border`
+- `border_size`
+
+Badge-level values override group values.
+
+Example:
+
+```yaml
+badges:
+  - color_template: room_temperature
+    border: primary
+    border_size: 1
+    badges:
+      - entity: sensor.living_temp
+        icon_template: temperature
+      - entity: sensor.bedroom_temp
+        icon_template: temperature
+        border_size: 2 # override
+```
+
 ## Badge fields
 
 - `entity` — entity id **or array of entity ids** used inside templates
+  - note: each `badges` item can be either a badge object (`entity` + params) or a group object (`badges: [...]` + inherited params)
   - when array is used, first item becomes default `entity` (same as `e[0]`)
   - full array is available as `e` in templates (`e[0]`, `e[1]`, ...)
 - `show` — template/boolean; if false badge is hidden

@@ -46,7 +46,7 @@ class SeagullBadgesCard extends HTMLElement {
       this.appendChild(this._card);
     }
 
-    const visible = (this._config.badges || [])
+    const visible = this._expandBadges(this._config.badges || [])
       .map((badge) => this._prepareBadge(badge))
       .filter((badge) => this._isBadgeVisible(badge))
       .map((badge) => this._normalizeBadge(badge));
@@ -63,6 +63,35 @@ class SeagullBadgesCard extends HTMLElement {
       el.addEventListener("click", handlers.onClick);
       el.addEventListener("dblclick", handlers.onDblClick);
     });
+  }
+
+  _expandBadges(items) {
+    const inheritKeys = [
+      "color",
+      "color_template",
+      "sub_icon_color",
+      "sub_icon_color_template",
+      "border",
+      "border_size",
+    ];
+
+    const out = [];
+    for (const item of items) {
+      if (item && Array.isArray(item.badges)) {
+        for (const child of item.badges) {
+          const merged = { ...child };
+          for (const k of inheritKeys) {
+            if (merged[k] === undefined && item[k] !== undefined) {
+              merged[k] = item[k];
+            }
+          }
+          out.push(merged);
+        }
+      } else {
+        out.push(item);
+      }
+    }
+    return out;
   }
 
   _prepareBadge(badge) {
