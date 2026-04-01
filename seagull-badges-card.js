@@ -207,6 +207,8 @@ class SeagullBadgesCard extends HTMLElement {
 
     const title = this._tpl(badge.title, badge, "");
     const subtitle = this._tpl(badge.subtitle, badge, "");
+    const titleColor = this._normalizeColor(this._tpl(badge.title_color, badge, iconColor || "#4b5563"), badge);
+    const subtitleColor = this._normalizeColor(this._tpl(badge.subtitle_color, badge, iconColor || "#4b5563"), badge);
 
     const subIcon = this._resolveNamedTemplate(
       "icon",
@@ -242,6 +244,8 @@ class SeagullBadgesCard extends HTMLElement {
       bgColor,
       title: this._str(title),
       subtitle: this._str(subtitle),
+      titleColor,
+      subtitleColor,
       subIcon,
       subIconColor,
       subIconSize,
@@ -473,8 +477,8 @@ class SeagullBadgesCard extends HTMLElement {
 
     const textHtml = hasText
       ? `<div class="sg-text ${hasTitle && hasSubtitle ? "" : "sg-single"} ${singleLine ? "sg-single-line" : ""}" style="color:${item.iconColor};">
-           ${hasTitle ? `<div class="sg-title">${this._esc(item.title)}</div>` : ""}
-           ${hasSubtitle ? `<div class="sg-subtitle">${this._esc(item.subtitle)}</div>` : ""}
+           ${hasTitle ? `<div class="sg-title" style="color:${item.titleColor};">${this._esc(item.title)}</div>` : ""}
+           ${hasSubtitle ? `<div class="sg-subtitle" style="color:${item.subtitleColor};">${this._esc(item.subtitle)}</div>` : ""}
          </div>`
       : "";
 

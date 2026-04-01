@@ -157,7 +157,9 @@ badges:
 - `border` — border color around badge (template/string, supports palette and HA color aliases). Default: same as icon color
 - `border_size` — border width in px (default `0`, no border)
 - `title` — template/string
+- `title_color` — template/string; overrides title text color when set
 - `subtitle` — template/string
+- `subtitle_color` — template/string; overrides subtitle text color when set
 - `badge` — optional small icon in top-right corner (with round background)
 - `badge_color` — template/string for badge icon color (default: main icon color)
 - `tap_action` — click action (default: `more-info`)
