@@ -104,7 +104,9 @@ If `scale` and/or `offset` are provided, template `value` is normalized to 0..10
 
 ## Badge fields
 
-- `entity` — entity id used inside templates (`entity` variable)
+- `entity` — entity id **or array of entity ids** used inside templates
+  - when array is used, first item becomes default `entity` (same as `e[0]`)
+  - full array is available as `e` in templates (`e[0]`, `e[1]`, ...)
 - `show` — template/boolean; if false badge is hidden
 - `show_value` — show only if `states(entity)` equals this value
 - `show_not_value` — show only if `states(entity)` is not equal to this value
@@ -140,7 +142,8 @@ Templates support expressions in `{{ ... }}` and conditional Jinja-style blocks 
 
 Available helpers/variables inside template:
 
-- `entity` — current badge entity_id string
+- `entity` — current default entity_id string (`e[0]`)
+- `e` — entity_id array when `entity` is configured as list
 - `hass`
 - `badge`
 - `config`
@@ -165,6 +168,10 @@ show_above: 10
 
 title: "{{ states(entity) === 'on' ? 'Active' : 'Idle' }}"
 subtitle: "{{ state_attr(entity, 'friendly_name') }}"
+# multi-entity example
+# entity: [sensor.temp_living, sensor.humidity_living]
+# title: "{{ states(e[0]) + '°' }}"
+# subtitle: "{{ states(e[1]) + '%' }}"
 ```
 
 ## Auto-deploy after commit (SSH)

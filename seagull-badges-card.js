@@ -47,6 +47,7 @@ class SeagullBadgesCard extends HTMLElement {
     }
 
     const visible = (this._config.badges || [])
+      .map((badge) => this._prepareBadge(badge))
       .filter((badge) => this._isBadgeVisible(badge))
       .map((badge) => this._normalizeBadge(badge));
 
@@ -62,6 +63,21 @@ class SeagullBadgesCard extends HTMLElement {
       el.addEventListener("click", handlers.onClick);
       el.addEventListener("dblclick", handlers.onDblClick);
     });
+  }
+
+  _prepareBadge(badge) {
+    const entities = Array.isArray(badge?.entity)
+      ? badge.entity
+      : (badge?.entity !== undefined && badge?.entity !== null ? [badge.entity] : []);
+
+    const e = entities.map((id) => String(id));
+    const entity = e[0] || "";
+
+    return {
+      ...badge,
+      entity,
+      e,
+    };
   }
 
   _isEditMode() {
@@ -639,6 +655,7 @@ class SeagullBadgesCard extends HTMLElement {
   _evalExpr(expr, badge, extraCtx = {}) {
     const hass = this._hass;
     const entity = badge?.entity;
+    const e = Array.isArray(badge?.e) ? badge.e : (entity ? [entity] : []);
 
     const states = (entityId) => {
       const id = entityId || entity;
@@ -665,6 +682,7 @@ class SeagullBadgesCard extends HTMLElement {
       const fn = new Function(
         "hass",
         "entity",
+        "e",
         "badge",
         "config",
         "states",
@@ -679,6 +697,7 @@ class SeagullBadgesCard extends HTMLElement {
       const out = fn(
         hass,
         entity,
+        e,
         badge,
         this._config,
         states,
