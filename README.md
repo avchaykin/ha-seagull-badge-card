@@ -56,7 +56,7 @@ Card-level template registries:
 
 - `icon_templates` — map of `template_name: "{{ ... }}"` for icons
 - `color_templates` — map of `template_name: "{{ ... }}"` for colors
-- `debug` — `true/false`; prints template resolution diagnostics to browser console
+- `debug` — `true/false`; prints template resolution diagnostics to browser console and shows recent debug lines inside the card
 
 `icon_template` / `color_template` value formats on each badge:
 

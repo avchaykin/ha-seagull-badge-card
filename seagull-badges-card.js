@@ -120,6 +120,9 @@ class SeagullBadgesCard extends HTMLElement {
     const padding = Number(this._config.padding) || 10;
 
     const badgesHtml = items.map((item, index) => this._renderBadge(item, index)).join("");
+    const debugHtml = this._config.debug
+      ? `<pre class="sg-debug">${this._esc((this._debugLines || []).join("\n"))}</pre>`
+      : "";
 
     return `
       <style>
@@ -225,8 +228,21 @@ class SeagullBadgesCard extends HTMLElement {
           --mdc-icon-size: 11px;
           filter: drop-shadow(0 1px 1px rgba(0,0,0,.18));
         }
+        .sg-debug {
+          margin: 8px;
+          padding: 8px;
+          border-radius: 8px;
+          background: rgba(15, 23, 42, 0.08);
+          font-size: 10px;
+          line-height: 1.3;
+          white-space: pre-wrap;
+          word-break: break-word;
+          max-height: 180px;
+          overflow: auto;
+        }
       </style>
       <div class="sg-wrap">${badgesHtml}</div>
+      ${debugHtml}
     `;
   }
 
@@ -567,6 +583,10 @@ class SeagullBadgesCard extends HTMLElement {
 
   _debug(event, payload = {}) {
     if (!this._config?.debug) return;
+    this._debugLines = this._debugLines || [];
+    const line = `${event} ${JSON.stringify(payload)}`;
+    this._debugLines.push(line);
+    if (this._debugLines.length > 20) this._debugLines.shift();
     // eslint-disable-next-line no-console
     console.info("[seagull-badges-card]", event, payload);
   }
