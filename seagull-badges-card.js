@@ -265,8 +265,8 @@ class SeagullBadgesCard extends HTMLElement {
           margin-right: 6px;
         }
         .sg-sub-icon-bg {
-          width: 14px;
-          height: 14px;
+          width: 16px;
+          height: 16px;
           border-radius: 9999px;
           display: inline-flex;
           align-items: center;
