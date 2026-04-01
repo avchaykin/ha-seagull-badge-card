@@ -95,7 +95,9 @@ If `scale` and/or `offset` are provided, template `value` is normalized to 0..10
 - `icon` — left icon (mdi)
 - `icon_template` — named icon template reference (preferred over `icon` when set)
 - `sub_icon` — optional middle icon (shown between main icon and text)
+- `sub_icon_template` — named icon template reference for `sub_icon` (preferred over `sub_icon` when set)
 - `sub_icon_color` — template/string color for `sub_icon` (default: main icon color)
+- `sub_icon_color_template` — named color template reference for `sub_icon` (preferred over `sub_icon_color` when set)
 - `sub_icon_size` — size of `sub_icon` relative to main badge size (`1` = same size as main icon area; default `0.5`)
 - `sub_icon_bg` — `true/false`; when `false`, `sub_icon` is shown without circular background (default `true`)
 - `color` — template/string; default `#4b5563`

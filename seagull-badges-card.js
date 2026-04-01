@@ -160,8 +160,18 @@ class SeagullBadgesCard extends HTMLElement {
     const title = this._tpl(badge.title, badge, "");
     const subtitle = this._tpl(badge.subtitle, badge, "");
 
-    const subIcon = this._tpl(badge.sub_icon, badge, "");
-    const subIconColor = this._normalizeColor(this._tpl(badge.sub_icon_color, badge, iconColor || "#6b7280"));
+    const subIcon = this._resolveNamedTemplate(
+      "icon",
+      badge.sub_icon_template,
+      badge,
+      this._tpl(badge.sub_icon, badge, "")
+    );
+    const subIconColor = this._normalizeColor(this._resolveNamedTemplate(
+      "color",
+      badge.sub_icon_color_template,
+      badge,
+      this._tpl(badge.sub_icon_color, badge, iconColor || "#6b7280")
+    ));
     const subIconSize = Number(this._tpl(badge.sub_icon_size, badge, 0.5));
     const subIconBg = this._toBool(this._tpl(badge.sub_icon_bg, badge, true), true);
 
