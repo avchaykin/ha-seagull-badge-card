@@ -2,14 +2,20 @@ class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
     return {
       type: "custom:seagull-badges-card",
+      icon_templates: {
+        battery: "{{ Number(value) <= 15 ? 'mdi:battery-10' : Number(value) <= 45 ? 'mdi:battery-40' : Number(value) <= 75 ? 'mdi:battery-70' : 'mdi:battery' }}"
+      },
+      color_templates: {
+        battery: "{{ Number(value) <= 15 ? '#ef4444' : Number(value) <= 35 ? '#f59e0b' : '#22c55e' }}"
+      },
       badges: [
         {
-          entity: "sun.sun",
+          entity: "sensor.phone_battery",
           show: "{{ true }}",
-          icon: "mdi:weather-sunny",
-          color: "{{ states(entity) === 'above_horizon' ? '#f59e0b' : '#4b5563' }}",
-          title: "{{ states(entity) === 'above_horizon' ? 'Day' : 'Night' }}",
-          subtitle: "{{ states(entity) }}",
+          icon_template: "battery",
+          color_template: "battery",
+          title: "Phone",
+          subtitle: "{{ states(entity) + '%' }}",
           badge: "mdi:check-circle",
           badge_color: "#16a34a"
         }
@@ -62,12 +68,19 @@ class SeagullBadgesCard extends HTMLElement {
   _normalizeBadge(badge) {
     const stateObj = badge.entity ? this._hass?.states?.[badge.entity] : undefined;
 
-    const icon = this._tpl(
-      badge.icon,
+    const iconFallback = stateObj?.attributes?.icon || "mdi:information-outline";
+    const icon = this._resolveNamedTemplate(
+      "icon",
+      badge.icon_template,
       badge,
-      stateObj?.attributes?.icon || "mdi:information-outline"
+      this._tpl(badge.icon, badge, iconFallback)
     );
-    const iconColor = this._tpl(badge.color ?? badge.icon_color, badge, "#4b5563");
+    const iconColor = this._resolveNamedTemplate(
+      "color",
+      badge.color_template,
+      badge,
+      this._tpl(badge.color ?? badge.icon_color, badge, "#4b5563")
+    );
 
     const title = this._tpl(badge.title, badge, "");
     const subtitle = this._tpl(badge.subtitle, badge, "");
@@ -184,7 +197,7 @@ class SeagullBadgesCard extends HTMLElement {
         }
         .sg-single-line .sg-title,
         .sg-single-line .sg-subtitle {
-          font-size: 15px;
+          font-size: 12px;
           line-height: 1;
           opacity: 1;
           font-weight: 700;
@@ -318,7 +331,40 @@ class SeagullBadgesCard extends HTMLElement {
     };
   }
 
-  _tpl(value, badge, fallback = "") {
+  _parseNamedTemplateSpec(spec) {
+    if (!spec) return null;
+    if (typeof spec === "string") return { name: spec, param: undefined };
+    if (Array.isArray(spec)) {
+      return { name: spec[0], param: spec[1] };
+    }
+    if (typeof spec === "object") {
+      return {
+        name: spec.name ?? spec.template,
+        param: spec.param ?? spec.value,
+      };
+    }
+    return null;
+  }
+
+  _resolveNamedTemplate(kind, templateSpec, badge, fallback = "") {
+    const spec = this._parseNamedTemplateSpec(templateSpec);
+    if (!spec?.name) return fallback;
+
+    const templates = this._config?.[`${kind}_templates`] || {};
+    const templateCode = templates[spec.name];
+    if (templateCode === undefined || templateCode === null) return fallback;
+
+    const defaultParam = badge?.entity && this._hass?.states?.[badge.entity]
+      ? this._hass.states[badge.entity].state
+      : undefined;
+    const paramValue = spec.param === undefined
+      ? defaultParam
+      : this._tpl(spec.param, badge, defaultParam);
+
+    return this._tpl(templateCode, badge, fallback, { value: paramValue, template_name: spec.name });
+  }
+
+  _tpl(value, badge, fallback = "", extraCtx = {}) {
     if (value === undefined || value === null) return fallback;
     if (typeof value !== "string") return value;
 
@@ -352,9 +398,21 @@ class SeagullBadgesCard extends HTMLElement {
           "states",
           "state_attr",
           "is_state",
+          "value",
+          "template_name",
           `return (${code});`
         );
-        const out = fn(hass, entity, badge, this._config, states, state_attr, is_state);
+        const out = fn(
+          hass,
+          entity,
+          badge,
+          this._config,
+          states,
+          state_attr,
+          is_state,
+          extraCtx.value,
+          extraCtx.template_name
+        );
         return out ?? "";
       } catch (e) {
         // eslint-disable-next-line no-console
