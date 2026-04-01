@@ -123,6 +123,8 @@ If `scale` and/or `offset` are provided, template `value` is normalized to 0..10
   - supports HA aliases: `primary`, `secondary`, `disabled`, `active`, `inactive`
   - for direct HA vars use CSS syntax, e.g. `var(--primary-color)`
 - `color_template` — named color template reference (preferred over `color` when set)
+- `border` — border color around badge (template/string, supports palette and HA color aliases)
+- `border_size` — border width in px (default `0`, no border)
 - `title` — template/string
 - `subtitle` — template/string
 - `badge` — optional small icon in top-right corner
