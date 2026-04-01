@@ -65,32 +65,26 @@ class SeagullBadgesCard extends HTMLElement {
     });
   }
 
-  _expandBadges(items) {
-    const inheritKeys = [
-      "color",
-      "color_template",
-      "sub_icon_color",
-      "sub_icon_color_template",
-      "border",
-      "border_size",
-    ];
-
+  _expandBadges(items, inherited = {}) {
     const out = [];
+
     for (const item of items) {
-      if (item && Array.isArray(item.badges)) {
-        for (const child of item.badges) {
-          const merged = { ...child };
-          for (const k of inheritKeys) {
-            if (merged[k] === undefined && item[k] !== undefined) {
-              merged[k] = item[k];
-            }
-          }
-          out.push(merged);
+      if (!item) continue;
+
+      if (Array.isArray(item.badges)) {
+        const groupInherited = { ...inherited };
+        for (const [k, v] of Object.entries(item)) {
+          if (k === "badges") continue;
+          groupInherited[k] = v;
         }
-      } else {
-        out.push(item);
+        out.push(...this._expandBadges(item.badges, groupInherited));
+        continue;
       }
+
+      const merged = { ...inherited, ...item };
+      out.push(merged);
     }
+
     return out;
   }
 

@@ -107,16 +107,11 @@ If `scale` and/or `offset` are provided, template `value` is normalized to 0..10
 
 Inside `badges`, you can define a group object with nested `badges`.
 
-Supported inherited group-level params:
+Group inheritance is now generic:
 
-- `color`
-- `color_template`
-- `sub_icon_color`
-- `sub_icon_color_template`
-- `border`
-- `border_size`
-
-Badge-level values override group values.
+- any parameter defined on the group level is inherited by nested badges
+- any parameter defined directly on a badge overrides group value
+- nested groups are supported (inheritance cascades)
 
 Example:
 
