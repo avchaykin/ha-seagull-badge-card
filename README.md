@@ -40,6 +40,7 @@ You can use these without defining `icon_templates` / `color_templates` manually
 | Template | Preview | Notes |
 |---|---|---|
 | `battery` | <img src="https://api.iconify.design/mdi/battery-alert-variant-outline.svg" width="20" /> <img src="https://api.iconify.design/mdi/battery-30.svg" width="20" /> <img src="https://api.iconify.design/mdi/battery-60.svg" width="20" /> <img src="https://api.iconify.design/mdi/battery-90.svg" width="20" /> <img src="https://api.iconify.design/mdi/battery.svg" width="20" /> | value 0..100 |
+| `battery-charging` | <img src="https://api.iconify.design/mdi/battery-charging-20.svg" width="20" /> <img src="https://api.iconify.design/mdi/battery-charging-50.svg" width="20" /> <img src="https://api.iconify.design/mdi/battery-charging-80.svg" width="20" /> <img src="https://api.iconify.design/mdi/battery-charging-100.svg" width="20" /> <img src="https://api.iconify.design/mdi/battery-charging.svg" width="20" /> | value 0..100 |
 | `light` | <img src="https://api.iconify.design/mdi/lightbulb-on.svg" width="20" /> <img src="https://api.iconify.design/mdi/lightbulb.svg" width="20" /> | on / off |
 | `lock` | <img src="https://api.iconify.design/mdi/lock.svg" width="20" /> <img src="https://api.iconify.design/mdi/lock-open-variant.svg" width="20" /> | locked / unlocked |
 | `door` | <img src="https://api.iconify.design/mdi/door-open.svg" width="20" /> <img src="https://api.iconify.design/mdi/door-closed.svg" width="20" /> | open / closed |

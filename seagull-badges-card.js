@@ -434,6 +434,7 @@ class SeagullBadgesCard extends HTMLElement {
     if (kind === "icon") {
       return {
         battery: "{{ Number(value) <= 5 ? 'mdi:battery-alert-variant-outline' : Number(value) <= 15 ? 'mdi:battery-10' : Number(value) <= 25 ? 'mdi:battery-20' : Number(value) <= 35 ? 'mdi:battery-30' : Number(value) <= 45 ? 'mdi:battery-40' : Number(value) <= 55 ? 'mdi:battery-50' : Number(value) <= 65 ? 'mdi:battery-60' : Number(value) <= 75 ? 'mdi:battery-70' : Number(value) <= 85 ? 'mdi:battery-80' : Number(value) <= 95 ? 'mdi:battery-90' : 'mdi:battery' }}",
+        'battery-charging': "{{ Number(value) <= 10 ? 'mdi:battery-charging-10' : Number(value) <= 20 ? 'mdi:battery-charging-20' : Number(value) <= 30 ? 'mdi:battery-charging-30' : Number(value) <= 40 ? 'mdi:battery-charging-40' : Number(value) <= 50 ? 'mdi:battery-charging-50' : Number(value) <= 60 ? 'mdi:battery-charging-60' : Number(value) <= 70 ? 'mdi:battery-charging-70' : Number(value) <= 80 ? 'mdi:battery-charging-80' : Number(value) <= 90 ? 'mdi:battery-charging-90' : Number(value) <= 95 ? 'mdi:battery-charging-100' : 'mdi:battery-charging' }}",
         light: "{{ ['on','playing','home','open'].includes(String(value).toLowerCase()) ? 'mdi:lightbulb-on' : 'mdi:lightbulb' }}",
         lock: "{{ ['locked','lock','on'].includes(String(value).toLowerCase()) ? 'mdi:lock' : 'mdi:lock-open-variant' }}",
         door: "{{ ['open','on','opening'].includes(String(value).toLowerCase()) ? 'mdi:door-open' : 'mdi:door-closed' }}",
