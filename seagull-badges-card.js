@@ -33,6 +33,7 @@ class SeagullBadgesCard extends HTMLElement {
       gap: config.gap ?? 10,
       padding: config.padding ?? 4,
       badge_size: config.badge_size ?? 50,
+      debug: config.debug ?? false,
       ...config,
     };
   }
@@ -87,6 +88,14 @@ class SeagullBadgesCard extends HTMLElement {
 
     const extraIcon = this._tpl(badge.badge ?? badge.extra_icon, badge, "");
     const extraIconColor = this._tpl(badge.badge_color ?? badge.extra_icon_color, badge, "#6b7280");
+
+    this._debug("badge:normalize", {
+      entity: badge.entity,
+      icon,
+      iconColor,
+      iconTemplate: badge.icon_template,
+      colorTemplate: badge.color_template,
+    });
 
     return {
       entity: badge.entity || "",
@@ -348,11 +357,23 @@ class SeagullBadgesCard extends HTMLElement {
 
   _resolveNamedTemplate(kind, templateSpec, badge, fallback = "") {
     const spec = this._parseNamedTemplateSpec(templateSpec);
-    if (!spec?.name) return fallback;
+    if (!spec?.name) {
+      this._debug("template:skip", { kind, reason: "no_spec_name", templateSpec, entity: badge?.entity });
+      return fallback;
+    }
 
     const templates = this._config?.[`${kind}_templates`] || {};
     const templateCode = templates[spec.name];
-    if (templateCode === undefined || templateCode === null) return fallback;
+    if (templateCode === undefined || templateCode === null) {
+      this._debug("template:skip", {
+        kind,
+        reason: "template_not_found",
+        templateName: spec.name,
+        knownTemplates: Object.keys(templates || {}),
+        entity: badge?.entity,
+      });
+      return fallback;
+    }
 
     const defaultParam = badge?.entity && this._hass?.states?.[badge.entity]
       ? this._hass.states[badge.entity].state
@@ -362,7 +383,18 @@ class SeagullBadgesCard extends HTMLElement {
       : this._tpl(spec.param, badge, defaultParam);
 
     const resolved = this._tpl(templateCode, badge, fallback, { value: paramValue, template_name: spec.name });
-    return typeof resolved === "string" ? resolved.trim() : resolved;
+    const out = typeof resolved === "string" ? resolved.trim() : resolved;
+
+    this._debug("template:resolved", {
+      kind,
+      templateName: spec.name,
+      entity: badge?.entity,
+      paramValue,
+      resolved: out,
+      fallback,
+    });
+
+    return out;
   }
 
   _evalExpr(expr, badge, extraCtx = {}) {
@@ -509,6 +541,12 @@ class SeagullBadgesCard extends HTMLElement {
       return v === undefined || v === null ? "" : String(v);
     });
     return out;
+  }
+
+  _debug(event, payload = {}) {
+    if (!this._config?.debug) return;
+    // eslint-disable-next-line no-console
+    console.info("[seagull-badges-card]", event, payload);
   }
 
   _toBool(value, fallback = true) {
