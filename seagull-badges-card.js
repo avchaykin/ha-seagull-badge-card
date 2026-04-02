@@ -1,5 +1,5 @@
-const SEAGULL_BADGES_CARD_VERSION = "0.1.3-dev";
-const SEAGULL_BADGES_CARD_COMMIT = "5d39c19";
+const SEAGULL_BADGES_CARD_VERSION = "0.1.4-dev";
+const SEAGULL_BADGES_CARD_COMMIT = "pending";
 
 class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
@@ -475,9 +475,6 @@ class SeagullBadgesCard extends HTMLElement {
           overflow: hidden;
           transition: max-width var(--sg-expand-time) cubic-bezier(.22, .61, .36, 1), opacity var(--sg-expand-time-fast) ease;
         }
-        .sg-expandable:not(.sg-collapsed) .sg-expand-slot {
-          overflow: visible;
-        }
         .sg-expandable.sg-collapsed {
           min-width: var(--sg-badge-h);
           width: var(--sg-badge-h);
@@ -724,50 +721,37 @@ class SeagullBadgesCard extends HTMLElement {
     if (el?.classList?.contains("sg-expandable")) {
       const duration = this._expandTimeMs();
       const easing = "cubic-bezier(.22, .61, .36, 1)";
-      const slot = el.querySelector(".sg-expand-slot");
+      const startCollapsed = el.classList.contains("sg-collapsed");
+      const targetCollapsed = !nextExpanded;
+
       const startWidth = el.getBoundingClientRect().width;
 
-      if (!slot) {
-        el.classList.toggle("sg-collapsed", !nextExpanded);
-        return;
-      }
+      // measure target width by temporarily applying target class
+      el.classList.toggle("sg-collapsed", targetCollapsed);
+      const endWidth = el.getBoundingClientRect().width;
 
-      if (nextExpanded) {
-        el.classList.remove("sg-collapsed");
-        slot.style.display = "inline-flex";
-      }
-
-      // force layout in target state and measure final width
-      const endWidth = (() => {
-        const prevWidth = el.style.width;
-        el.style.width = "";
-        const w = el.getBoundingClientRect().width;
-        el.style.width = prevWidth;
-        return w;
-      })();
+      // restore start visual state before animation begins
+      el.classList.toggle("sg-collapsed", startCollapsed);
 
       el.style.overflow = "hidden";
       el.style.width = `${startWidth}px`;
       void el.offsetWidth;
 
-      if (typeof el.animate === "function") {
-        const anim = el.animate([{ width: `${startWidth}px` }, { width: `${endWidth}px` }], { duration, easing, fill: "forwards" });
-        anim.onfinish = () => {
-          el.style.width = "";
-          el.style.overflow = "";
-          if (!nextExpanded) el.classList.add("sg-collapsed");
-        };
-        anim.oncancel = anim.onfinish;
-      } else {
-        el.style.transition = `width ${duration}ms ${easing}`;
-        requestAnimationFrame(() => { el.style.width = `${endWidth}px`; });
-        setTimeout(() => {
-          el.style.width = "";
-          el.style.overflow = "";
-          el.style.transition = "";
-          if (!nextExpanded) el.classList.add("sg-collapsed");
-        }, duration + 120);
-      }
+      el.style.transition = `width ${duration}ms ${easing}`;
+      requestAnimationFrame(() => {
+        el.style.width = `${endWidth}px`;
+      });
+
+      const clear = () => {
+        el.classList.toggle("sg-collapsed", targetCollapsed);
+        el.style.width = "";
+        el.style.overflow = "";
+        el.style.transition = "";
+        el.removeEventListener("transitionend", clear);
+      };
+
+      el.addEventListener("transitionend", clear);
+      setTimeout(clear, duration + 120);
     } else {
       this.hass = this._hass;
     }
