@@ -1,5 +1,5 @@
-const SEAGULL_BADGES_CARD_VERSION = "0.1.8-dev";
-const SEAGULL_BADGES_CARD_COMMIT = "b679ca6";
+const SEAGULL_BADGES_CARD_VERSION = "0.1.9-dev";
+const SEAGULL_BADGES_CARD_COMMIT = "pending";
 
 class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
@@ -417,13 +417,13 @@ class SeagullBadgesCard extends HTMLElement {
         .sg-wrap {
           display: flex;
           align-items: center;
-          justify-content: ${align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center"};
-          min-height: ${rowMinHeight};
-          padding: ${effectivePaddingY}px 8px;
+          justify-content: var(--sg-justify, center);
+          min-height: var(--sg-row-min-h, auto);
+          padding: var(--sg-pad-y, 0px) 8px;
         }
         .sg-track {
           display: flex;
-          gap: ${gap}px;
+          gap: var(--sg-gap, 10px);
           align-items: center;
           width: max-content;
           max-width: 100%;
@@ -611,7 +611,7 @@ class SeagullBadgesCard extends HTMLElement {
           overflow: auto;
         }
       </style>
-      <div class="sg-wrap ${align === "justified" ? "sg-full" : ""}"><div class="sg-track">${badgesHtml}</div></div>
+      <div class="sg-wrap ${align === "justified" ? "sg-full" : ""}" style="--sg-justify:${align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center"};--sg-gap:${gap}px;--sg-pad-y:${effectivePaddingY}px;--sg-row-min-h:${rowMinHeight};"><div class="sg-track">${badgesHtml}</div></div>
       ${debugHtml}
     `;
   }
