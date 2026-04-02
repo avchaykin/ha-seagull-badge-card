@@ -1,5 +1,5 @@
 const SEAGULL_BADGES_CARD_VERSION = "0.1.0-dev";
-const SEAGULL_BADGES_CARD_COMMIT = "working-tree";
+const SEAGULL_BADGES_CARD_COMMIT = "b1bade6";
 
 class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
@@ -387,9 +387,6 @@ class SeagullBadgesCard extends HTMLElement {
     const debugHtml = this._config.debug
       ? `<pre class="sg-debug">${this._esc((this._debugLines || []).join("\n"))}</pre>`
       : "";
-    const versionHtml = this._isEditMode()
-      ? `<div class="sg-version">v${this._esc(SEAGULL_BADGES_CARD_VERSION)} · ${this._esc(SEAGULL_BADGES_CARD_COMMIT)}</div>`
-      : "";
 
     return `
       <style>
@@ -549,17 +546,8 @@ class SeagullBadgesCard extends HTMLElement {
           max-height: 180px;
           overflow: auto;
         }
-        .sg-version {
-          margin: 6px 8px 0;
-          opacity: .55;
-          font-size: 10px;
-          line-height: 1.1;
-          text-align: right;
-          font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        }
       </style>
       <div class="sg-wrap ${this._config.full_width ? "sg-full" : ""}">${badgesHtml}</div>
-      ${versionHtml}
       ${debugHtml}
     `;
   }
@@ -1125,11 +1113,35 @@ class SeagullBadgesCard extends HTMLElement {
       .replaceAll("'", "&#39;");
   }
 
+  static async getConfigElement() {
+    return document.createElement("seagull-badges-card-editor");
+  }
+
   getCardSize() {
     return 2;
   }
 }
 
+class SeagullBadgesCardEditor extends HTMLElement {
+  setConfig(_config) {
+    this._render();
+  }
+
+  _render() {
+    this.innerHTML = `
+      <div style="padding:12px 0; opacity:.85; font-size:13px; line-height:1.4;">
+        <div><b>Seagull Badges Card</b></div>
+        <div style="margin-top:6px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;">
+          Version: v${SEAGULL_BADGES_CARD_VERSION}<br>
+          Commit: ${SEAGULL_BADGES_CARD_COMMIT}
+        </div>
+        <div style="margin-top:8px; opacity:.75;">Use the YAML tab to edit card configuration.</div>
+      </div>
+    `;
+  }
+}
+
+customElements.define("seagull-badges-card-editor", SeagullBadgesCardEditor);
 customElements.define("seagull-badges-card", SeagullBadgesCard);
 
 window.customCards = window.customCards || [];
@@ -1137,5 +1149,5 @@ window.customCards.push({
   type: "seagull-badges-card",
   name: "Seagull Badges Card",
   preview: true,
-  description: "Badges card with mustache templates, visibility, colors and labels"
+  description: `Badges card with mustache templates, visibility, colors and labels (v${SEAGULL_BADGES_CARD_VERSION}, ${SEAGULL_BADGES_CARD_COMMIT})`
 });
