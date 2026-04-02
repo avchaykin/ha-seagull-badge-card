@@ -459,6 +459,24 @@ class SeagullBadgesCard extends HTMLElement {
           padding: 0 14px 0 8px;
           justify-content: flex-start;
           border-radius: calc(var(--sg-badge-h) / 2);
+          transition: padding .22s ease, min-width .22s ease;
+        }
+        .sg-expand-slot {
+          display: inline-flex;
+          align-items: center;
+          min-width: 0;
+          max-width: 1000px;
+          opacity: 1;
+          overflow: hidden;
+          transition: max-width .24s ease, opacity .16s ease;
+        }
+        .sg-expandable.sg-collapsed {
+          min-width: var(--sg-badge-h);
+          padding-right: 8px;
+        }
+        .sg-expandable.sg-collapsed .sg-expand-slot {
+          max-width: 0;
+          opacity: 0;
         }
         .sg-icon-bg {
           width: var(--sg-badge-h);
@@ -572,20 +590,18 @@ class SeagullBadgesCard extends HTMLElement {
   _renderBadge(item, index) {
     const canExpand = this._hasExpandAction(item) && !!item.icon;
     const isExpanded = canExpand ? this._isExpanded(item) : true;
-    const hasTitle = isExpanded && !!item.title;
-    const hasSubtitle = isExpanded && !!item.subtitle;
-    const hasSubIcon = isExpanded && (!!item.subIcon || (Array.isArray(item.subIcons) && item.subIcons.length > 0));
-    const isCircle = !!item.icon && !hasTitle && !hasSubtitle && !hasSubIcon;
+    const hasTitleRaw = !!item.title;
+    const hasSubtitleRaw = !!item.subtitle;
+    const hasSubIconRaw = !!item.subIcon || (Array.isArray(item.subIcons) && item.subIcons.length > 0);
+    const isCircle = !canExpand && !!item.icon && !hasTitleRaw && !hasSubtitleRaw && !hasSubIconRaw;
 
     const iconHtml = item.icon
       ? `<ha-icon class="sg-icon" style="color:${item.iconColor}" icon="${this._esc(item.icon)}"></ha-icon>`
       : "";
 
-    const subIcons = hasSubIcon
-      ? (Array.isArray(item.subIcons) && item.subIcons.length
-        ? item.subIcons
-        : (item.subIcon ? [{ icon: item.subIcon, color: item.subIconColor }] : []))
-      : [];
+    const subIcons = (Array.isArray(item.subIcons) && item.subIcons.length
+      ? item.subIcons
+      : (item.subIcon ? [{ icon: item.subIcon, color: item.subIconColor }] : []));
 
     const subIconHtml = subIcons
       .map((si, siIndex) => item.subIconBg
@@ -595,7 +611,7 @@ class SeagullBadgesCard extends HTMLElement {
         : `<ha-icon class="sg-sub-icon sg-sub-icon-no-bg" data-sg-sub-index="${siIndex}" style="color:${si.color}; --sg-sub-icon-size:${item.subIconSize};" icon="${this._esc(si.icon)}"></ha-icon>`)
       .join("");
 
-    const extraIconHtml = (isExpanded && item.extraIcon)
+    const extraIconHtml = item.extraIcon
       ? `<span class="sg-extra" style="background:${this._withAlpha(item.extraIconColor, 0.14)};">
            <ha-icon class="sg-extra-icon" style="color:${item.extraIconColor}" icon="${this._esc(item.extraIcon)}"></ha-icon>
          </span>`
@@ -612,27 +628,36 @@ class SeagullBadgesCard extends HTMLElement {
       `;
     }
 
-    const singleLine = (hasTitle && !hasSubtitle) || (!hasTitle && hasSubtitle);
-
-    const hasText = hasTitle || hasSubtitle;
+    const singleLine = (hasTitleRaw && !hasSubtitleRaw) || (!hasTitleRaw && hasSubtitleRaw);
+    const hasText = hasTitleRaw || hasSubtitleRaw;
 
     const textHtml = hasText
-      ? `<div class="sg-text ${hasTitle && hasSubtitle ? "" : "sg-single"} ${singleLine ? "sg-single-line" : ""}" style="color:${item.iconColor};--sg-text-scale:${item.textSize};--sg-text-offset-x:${item.textOffset};--sg-title-scale:${item.titleSize};--sg-subtitle-scale:${item.subtitleSize};">
-           ${hasTitle ? `<div class="sg-title" style="color:${item.titleColor};">${this._esc(item.title)}</div>` : ""}
-           ${hasSubtitle ? `<div class="sg-subtitle" style="color:${item.subtitleColor};">${this._esc(item.subtitle)}</div>` : ""}
+      ? `<div class="sg-text ${hasTitleRaw && hasSubtitleRaw ? "" : "sg-single"} ${singleLine ? "sg-single-line" : ""}" style="color:${item.iconColor};--sg-text-scale:${item.textSize};--sg-text-offset-x:${item.textOffset};--sg-title-scale:${item.titleSize};--sg-subtitle-scale:${item.subtitleSize};">
+           ${hasTitleRaw ? `<div class="sg-title" style="color:${item.titleColor};">${this._esc(item.title)}</div>` : ""}
+           ${hasSubtitleRaw ? `<div class="sg-subtitle" style="color:${item.subtitleColor};">${this._esc(item.subtitle)}</div>` : ""}
          </div>`
       : "";
 
-    const pillClasses = ["sg-item", "sg-pill", item.icon ? "" : "sg-text-only", (!hasText && item.icon && item.subIcon) ? "sg-no-text-icons" : ""]
+    const detailsHtml = (subIconHtml || textHtml)
+      ? `<span class="sg-expand-slot">${subIconHtml}${textHtml}</span>`
+      : "";
+
+    const pillClasses = [
+      "sg-item",
+      "sg-pill",
+      canExpand ? "sg-expandable" : "",
+      canExpand && !isExpanded ? "sg-collapsed" : "",
+      item.icon ? "" : "sg-text-only",
+      (!hasText && item.icon && item.subIcon) ? "sg-no-text-icons" : ""
+    ]
       .filter(Boolean)
       .join(" ");
 
     return `
       <div class="${pillClasses}" data-sg-id="${id}" style="background:${this._withAlpha(item.bgColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.bgColor, 0.22)};--sg-icon-scale:${item.iconSize};--sg-icon-offset-x:${item.iconOffset};border:${item.borderSize}px solid ${this._esc(item.borderColor)};">
         ${iconHtml}
-        ${subIconHtml}
-        ${textHtml}
-        ${extraIconHtml}
+        ${detailsHtml}
+        ${(isExpanded || !canExpand) ? extraIconHtml : ""}
       </div>
     `;
   }
