@@ -1,5 +1,5 @@
-const SEAGULL_BADGES_CARD_VERSION = "0.2.4-dev";
-const SEAGULL_BADGES_CARD_COMMIT = "bb89e7c";
+const SEAGULL_BADGES_CARD_VERSION = "0.2.5-dev";
+const SEAGULL_BADGES_CARD_COMMIT = "pending";
 
 class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
@@ -429,7 +429,8 @@ class SeagullBadgesCard extends HTMLElement {
         }
         .sg-track {
           display: flex;
-          gap: var(--sg-gap, 10px);
+          column-gap: var(--sg-gap, 10px);
+          row-gap: var(--sg-row-gap, var(--sg-gap, 10px));
           align-items: center;
           align-content: flex-start;
           justify-content: var(--sg-track-justify, flex-start);
@@ -441,7 +442,7 @@ class SeagullBadgesCard extends HTMLElement {
           flex-basis: 100%;
           width: 0;
           height: 0;
-          margin: 0;
+          margin-top: calc(var(--sg-row-gap, var(--sg-gap, 10px)) * -1);
           padding: 0;
         }
         .sg-wrap.sg-wrap-lines .sg-track,
