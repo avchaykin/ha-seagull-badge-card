@@ -1,3 +1,6 @@
+const SEAGULL_BADGES_CARD_VERSION = "0.1.0-dev";
+const SEAGULL_BADGES_CARD_COMMIT = "working-tree";
+
 class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
     return {
@@ -384,6 +387,9 @@ class SeagullBadgesCard extends HTMLElement {
     const debugHtml = this._config.debug
       ? `<pre class="sg-debug">${this._esc((this._debugLines || []).join("\n"))}</pre>`
       : "";
+    const versionHtml = this._isEditMode()
+      ? `<div class="sg-version">v${this._esc(SEAGULL_BADGES_CARD_VERSION)} · ${this._esc(SEAGULL_BADGES_CARD_COMMIT)}</div>`
+      : "";
 
     return `
       <style>
@@ -392,11 +398,13 @@ class SeagullBadgesCard extends HTMLElement {
           display: flex;
           gap: ${gap}px;
           align-items: center;
+          justify-content: space-between;
           min-height: ${rowMinHeight};
           padding: ${effectivePaddingY}px 8px;
         }
         .sg-wrap.sg-full .sg-item {
           width: 100%;
+          flex: 1 1 0;
           margin: 0;
         }
         .sg-wrap.sg-full .sg-pill {
@@ -405,7 +413,7 @@ class SeagullBadgesCard extends HTMLElement {
         }
         .sg-item {
           min-width: 0;
-          flex: 1 1 0;
+          flex: 0 1 auto;
           position: relative;
           border-radius: 9999px;
           display: flex;
@@ -541,8 +549,17 @@ class SeagullBadgesCard extends HTMLElement {
           max-height: 180px;
           overflow: auto;
         }
+        .sg-version {
+          margin: 6px 8px 0;
+          opacity: .55;
+          font-size: 10px;
+          line-height: 1.1;
+          text-align: right;
+          font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
       </style>
       <div class="sg-wrap ${this._config.full_width ? "sg-full" : ""}">${badgesHtml}</div>
+      ${versionHtml}
       ${debugHtml}
     `;
   }
