@@ -502,7 +502,7 @@ class SeagullBadgesCard extends HTMLElement {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          transform: translateX(calc(var(--sg-text-offset-x, 0) * 1px));
+          margin-left: calc(var(--sg-text-offset-x, 0) * 1px);
         }
         .sg-title {
           font-weight: 700;
