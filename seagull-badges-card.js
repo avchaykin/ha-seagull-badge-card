@@ -1,5 +1,5 @@
-const SEAGULL_BADGES_CARD_VERSION = "0.2.2-dev";
-const SEAGULL_BADGES_CARD_COMMIT = "8a1152f";
+const SEAGULL_BADGES_CARD_VERSION = "0.2.3-dev";
+const SEAGULL_BADGES_CARD_COMMIT = "pending";
 
 class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
@@ -406,8 +406,12 @@ class SeagullBadgesCard extends HTMLElement {
       ? "justified"
       : (["left", "right", "center", "justified"].includes(alignRaw) ? alignRaw : "center");
     const wrap = this._toBool(this._config.wrap, false);
+    const hasForcedBreak = items.some((item) => item?.br !== undefined && item?.br !== null);
+    const effectiveWrap = wrap || hasForcedBreak;
 
-    const badgesHtml = items.map((item, index) => this._renderBadge(item, index)).join("");
+    const badgesHtml = items
+      .map((item, index) => `${item?.br !== undefined && item?.br !== null ? '<span class="sg-break"></span>' : ''}${this._renderBadge(item, index)}`)
+      .join("");
     const debugHtml = this._config.debug
       ? `<pre class="sg-debug">${this._esc((this._debugLines || []).join("\n"))}</pre>`
       : "";
@@ -431,6 +435,13 @@ class SeagullBadgesCard extends HTMLElement {
           flex-wrap: var(--sg-wrap, nowrap);
           width: max-content;
           max-width: 100%;
+        }
+        .sg-break {
+          flex-basis: 100%;
+          width: 0;
+          height: 0;
+          margin: 0;
+          padding: 0;
         }
         .sg-wrap.sg-wrap-lines .sg-track,
         .sg-wrap.sg-full .sg-track {
@@ -616,7 +627,7 @@ class SeagullBadgesCard extends HTMLElement {
           overflow: auto;
         }
       </style>
-      <div class="sg-wrap ${align === "justified" ? "sg-full" : ""} ${wrap ? "sg-wrap-lines" : ""}" style="--sg-justify:${align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center"};--sg-track-justify:${align === "left" ? "flex-start" : align === "right" ? "flex-end" : align === "justified" ? "space-between" : "center"};--sg-gap:${gap}px;--sg-pad-y:${effectivePaddingY}px;--sg-row-min-h:${rowMinHeight};--sg-wrap:${wrap ? "wrap" : "nowrap"};"><div class="sg-track">${badgesHtml}</div></div>
+      <div class="sg-wrap ${align === "justified" ? "sg-full" : ""} ${effectiveWrap ? "sg-wrap-lines" : ""}" style="--sg-justify:${align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center"};--sg-track-justify:${align === "left" ? "flex-start" : align === "right" ? "flex-end" : align === "justified" ? "space-between" : "center"};--sg-gap:${gap}px;--sg-pad-y:${effectivePaddingY}px;--sg-row-min-h:${rowMinHeight};--sg-wrap:${effectiveWrap ? "wrap" : "nowrap"};"><div class="sg-track">${badgesHtml}</div></div>
       ${debugHtml}
     `;
   }

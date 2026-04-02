@@ -168,6 +168,7 @@ badges:
 - `show_not_in` — show only if `states(entity)` is not in provided array
 - `show_below` — show only if numeric `states(entity)` is below this number
 - `show_above` — show only if numeric `states(entity)` is above this number
+- `br` — if present (any value), forces this badge to start from a new row
 - `icon` — left icon (mdi)
 - `icon_template` — named icon template reference (preferred over `icon` when set)
 - `icon_size` — icon size multiplier (default `1`)
