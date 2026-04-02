@@ -423,8 +423,8 @@ class SeagullBadgesCard extends HTMLElement {
           background: var(--sg-hover-bg, transparent) !important;
         }
         .sg-circle {
-          width: var(--sg-size);
-          height: var(--sg-size);
+          width: var(--sg-badge-h);
+          height: var(--sg-badge-h);
           margin: 0 auto;
           box-sizing: border-box;
         }
