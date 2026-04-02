@@ -1,5 +1,5 @@
-const SEAGULL_BADGES_CARD_VERSION = "0.1.0-dev";
-const SEAGULL_BADGES_CARD_COMMIT = "06838b1";
+const SEAGULL_BADGES_CARD_VERSION = "0.1.1-dev";
+const SEAGULL_BADGES_CARD_COMMIT = "pending";
 
 class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
@@ -722,23 +722,38 @@ class SeagullBadgesCard extends HTMLElement {
     this._expandedState[key] = nextExpanded;
 
     if (el?.classList?.contains("sg-expandable")) {
+      const duration = this._expandTimeMs();
+      const originalTransition = el.style.transition;
       const startWidth = el.getBoundingClientRect().width;
+
+      el.style.transition = "none";
+      el.style.overflow = "hidden";
       el.style.width = `${startWidth}px`;
-      // force reflow so width animation starts from fixed current width
       void el.offsetWidth;
+
       el.classList.toggle("sg-collapsed", !nextExpanded);
+
+      // Measure target width in the new state
       el.style.width = "";
       const endWidth = el.getBoundingClientRect().width;
+
+      // Animate from start -> end width explicitly
       el.style.width = `${startWidth}px`;
       void el.offsetWidth;
-      el.style.width = `${endWidth}px`;
+      el.style.transition = `width ${duration}ms cubic-bezier(.22, .61, .36, 1)`;
+
+      requestAnimationFrame(() => {
+        el.style.width = `${endWidth}px`;
+      });
 
       const clear = () => {
         el.style.width = "";
+        el.style.overflow = "";
+        el.style.transition = originalTransition;
         el.removeEventListener("transitionend", clear);
       };
       el.addEventListener("transitionend", clear);
-      setTimeout(clear, this._expandTimeMs() + 120);
+      setTimeout(clear, duration + 160);
     } else {
       this.hass = this._hass;
     }
