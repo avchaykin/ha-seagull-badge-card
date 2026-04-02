@@ -459,7 +459,7 @@ class SeagullBadgesCard extends HTMLElement {
           padding: 0 14px 0 8px;
           justify-content: flex-start;
           border-radius: calc(var(--sg-badge-h) / 2);
-          transition: padding .22s ease, min-width .22s ease;
+          transition: padding .32s cubic-bezier(.22, .61, .36, 1), min-width .32s cubic-bezier(.22, .61, .36, 1), border-radius .24s ease;
         }
         .sg-expand-slot {
           display: inline-flex;
@@ -468,11 +468,17 @@ class SeagullBadgesCard extends HTMLElement {
           max-width: 1000px;
           opacity: 1;
           overflow: hidden;
-          transition: max-width .24s ease, opacity .16s ease;
+          transition: max-width .34s cubic-bezier(.22, .61, .36, 1), opacity .22s ease;
         }
         .sg-expandable.sg-collapsed {
           min-width: var(--sg-badge-h);
-          padding-right: 8px;
+          width: var(--sg-badge-h);
+          padding: 0;
+          border-radius: 9999px;
+          justify-content: center;
+        }
+        .sg-expandable.sg-collapsed .sg-icon {
+          margin-right: 0;
         }
         .sg-expandable.sg-collapsed .sg-expand-slot {
           max-width: 0;
