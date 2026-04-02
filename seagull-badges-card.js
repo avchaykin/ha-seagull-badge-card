@@ -1,5 +1,5 @@
-const SEAGULL_BADGES_CARD_VERSION = "0.2.1-dev";
-const SEAGULL_BADGES_CARD_COMMIT = "6ba4304";
+const SEAGULL_BADGES_CARD_VERSION = "0.2.2-dev";
+const SEAGULL_BADGES_CARD_COMMIT = "pending";
 
 class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
@@ -427,10 +427,12 @@ class SeagullBadgesCard extends HTMLElement {
           gap: var(--sg-gap, 10px);
           align-items: center;
           align-content: flex-start;
+          justify-content: var(--sg-track-justify, flex-start);
           flex-wrap: var(--sg-wrap, nowrap);
           width: max-content;
           max-width: 100%;
         }
+        .sg-wrap.sg-wrap-lines .sg-track,
         .sg-wrap.sg-full .sg-track {
           width: 100%;
         }
@@ -614,7 +616,7 @@ class SeagullBadgesCard extends HTMLElement {
           overflow: auto;
         }
       </style>
-      <div class="sg-wrap ${align === "justified" ? "sg-full" : ""}" style="--sg-justify:${align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center"};--sg-gap:${gap}px;--sg-pad-y:${effectivePaddingY}px;--sg-row-min-h:${rowMinHeight};--sg-wrap:${wrap ? "wrap" : "nowrap"};"><div class="sg-track">${badgesHtml}</div></div>
+      <div class="sg-wrap ${align === "justified" ? "sg-full" : ""} ${wrap ? "sg-wrap-lines" : ""}" style="--sg-justify:${align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center"};--sg-track-justify:${align === "left" ? "flex-start" : align === "right" ? "flex-end" : align === "justified" ? "space-between" : "center"};--sg-gap:${gap}px;--sg-pad-y:${effectivePaddingY}px;--sg-row-min-h:${rowMinHeight};--sg-wrap:${wrap ? "wrap" : "nowrap"};"><div class="sg-track">${badgesHtml}</div></div>
       ${debugHtml}
     `;
   }
