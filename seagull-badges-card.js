@@ -1,5 +1,5 @@
-const SEAGULL_BADGES_CARD_VERSION = "0.2.0-dev";
-const SEAGULL_BADGES_CARD_COMMIT = "a4637e7";
+const SEAGULL_BADGES_CARD_VERSION = "0.2.1-dev";
+const SEAGULL_BADGES_CARD_COMMIT = "pending";
 
 class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
@@ -1268,7 +1268,7 @@ customElements.define("seagull-badges-card", SeagullBadgesCard);
 
 if (!window.__SEAGULL_BADGES_CARD_ANNOUNCED__) {
   window.__SEAGULL_BADGES_CARD_ANNOUNCED__ = true;
-  console.info(`%cSEAGULL-BADGES-CARD%c v${SEAGULL_BADGES_CARD_VERSION} (%c${SEAGULL_BADGES_CARD_COMMIT}%c) loaded`, "color:#22c55e;font-weight:700;", "color:inherit;", "color:#f59e0b;font-weight:700;", "color:inherit;");
+  console.info(`%c🐦 SEAGULL-BADGES-CARD%c v${SEAGULL_BADGES_CARD_VERSION} (%c${SEAGULL_BADGES_CARD_COMMIT}%c) loaded`, "color:#fff;background:#dc2626;padding:2px 6px;border-radius:4px;font-weight:700;", "color:inherit;", "color:#f59e0b;font-weight:700;", "color:inherit;");
 }
 
 window.customCards = window.customCards || [];
