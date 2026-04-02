@@ -459,7 +459,10 @@ class SeagullBadgesCard extends HTMLElement {
           padding: 0 14px 0 8px;
           justify-content: flex-start;
           border-radius: calc(var(--sg-badge-h) / 2);
-          transition: padding .32s cubic-bezier(.22, .61, .36, 1), min-width .32s cubic-bezier(.22, .61, .36, 1), border-radius .24s ease, gap .26s ease;
+          transition: width .34s cubic-bezier(.22, .61, .36, 1), padding .32s cubic-bezier(.22, .61, .36, 1), min-width .32s cubic-bezier(.22, .61, .36, 1), border-radius .24s ease, gap .26s ease;
+        }
+        .sg-expandable {
+          will-change: width;
         }
         .sg-expand-slot {
           display: inline-flex;
@@ -712,7 +715,23 @@ class SeagullBadgesCard extends HTMLElement {
     this._expandedState[key] = nextExpanded;
 
     if (el?.classList?.contains("sg-expandable")) {
+      const startWidth = el.getBoundingClientRect().width;
+      el.style.width = `${startWidth}px`;
+      // force reflow so width animation starts from fixed current width
+      void el.offsetWidth;
       el.classList.toggle("sg-collapsed", !nextExpanded);
+      el.style.width = "";
+      const endWidth = el.getBoundingClientRect().width;
+      el.style.width = `${startWidth}px`;
+      void el.offsetWidth;
+      el.style.width = `${endWidth}px`;
+
+      const clear = () => {
+        el.style.width = "";
+        el.removeEventListener("transitionend", clear);
+      };
+      el.addEventListener("transitionend", clear);
+      setTimeout(clear, 420);
     } else {
       this.hass = this._hass;
     }
