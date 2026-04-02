@@ -395,7 +395,7 @@ class SeagullBadgesCard extends HTMLElement {
           display: flex;
           gap: ${gap}px;
           align-items: center;
-          justify-content: space-between;
+          justify-content: center;
           min-height: ${rowMinHeight};
           padding: ${effectivePaddingY}px 8px;
         }
