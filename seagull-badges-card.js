@@ -1,5 +1,5 @@
-const SEAGULL_BADGES_CARD_VERSION = "0.1.2-dev";
-const SEAGULL_BADGES_CARD_COMMIT = "ca808b5";
+const SEAGULL_BADGES_CARD_VERSION = "0.1.3-dev";
+const SEAGULL_BADGES_CARD_COMMIT = "pending";
 
 class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
@@ -724,41 +724,48 @@ class SeagullBadgesCard extends HTMLElement {
     if (el?.classList?.contains("sg-expandable")) {
       const duration = this._expandTimeMs();
       const easing = "cubic-bezier(.22, .61, .36, 1)";
+      const slot = el.querySelector(".sg-expand-slot");
       const startWidth = el.getBoundingClientRect().width;
+
+      if (!slot) {
+        el.classList.toggle("sg-collapsed", !nextExpanded);
+        return;
+      }
+
+      if (nextExpanded) {
+        el.classList.remove("sg-collapsed");
+        slot.style.display = "inline-flex";
+      }
+
+      // force layout in target state and measure final width
+      const endWidth = (() => {
+        const prevWidth = el.style.width;
+        el.style.width = "";
+        const w = el.getBoundingClientRect().width;
+        el.style.width = prevWidth;
+        return w;
+      })();
 
       el.style.overflow = "hidden";
       el.style.width = `${startWidth}px`;
       void el.offsetWidth;
 
-      el.classList.toggle("sg-collapsed", !nextExpanded);
-
-      // compute target width in new state
-      el.style.width = "";
-      const endWidth = el.getBoundingClientRect().width;
-
-      // lock back to start and animate to end
-      el.style.width = `${startWidth}px`;
-      void el.offsetWidth;
-
       if (typeof el.animate === "function") {
-        const anim = el.animate(
-          [{ width: `${startWidth}px` }, { width: `${endWidth}px` }],
-          { duration, easing, fill: "forwards" }
-        );
+        const anim = el.animate([{ width: `${startWidth}px` }, { width: `${endWidth}px` }], { duration, easing, fill: "forwards" });
         anim.onfinish = () => {
           el.style.width = "";
           el.style.overflow = "";
+          if (!nextExpanded) el.classList.add("sg-collapsed");
         };
         anim.oncancel = anim.onfinish;
       } else {
         el.style.transition = `width ${duration}ms ${easing}`;
-        requestAnimationFrame(() => {
-          el.style.width = `${endWidth}px`;
-        });
+        requestAnimationFrame(() => { el.style.width = `${endWidth}px`; });
         setTimeout(() => {
           el.style.width = "";
           el.style.overflow = "";
           el.style.transition = "";
+          if (!nextExpanded) el.classList.add("sg-collapsed");
         }, duration + 120);
       }
     } else {
