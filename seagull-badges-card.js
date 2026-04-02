@@ -1,5 +1,5 @@
-const SEAGULL_BADGES_CARD_VERSION = "0.1.6-dev";
-const SEAGULL_BADGES_CARD_COMMIT = "243684a";
+const SEAGULL_BADGES_CARD_VERSION = "0.1.7-dev";
+const SEAGULL_BADGES_CARD_COMMIT = "pending";
 
 class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
@@ -401,6 +401,10 @@ class SeagullBadgesCard extends HTMLElement {
     const rowMinHeight = effectivePaddingY === 0 ? "auto" : "var(--sg-size)";
     const expandTime = Number(this._config.expand_time);
     const expandTimeMs = Number.isFinite(expandTime) && expandTime > 0 ? expandTime : 320;
+    const alignRaw = String(this._config.align ?? "").toLowerCase();
+    const align = this._config.full_width
+      ? "justified"
+      : (["left", "right", "center", "justified"].includes(alignRaw) ? alignRaw : "center");
 
     const badgesHtml = items.map((item, index) => this._renderBadge(item, index)).join("");
     const debugHtml = this._config.debug
@@ -414,7 +418,7 @@ class SeagullBadgesCard extends HTMLElement {
           display: flex;
           gap: ${gap}px;
           align-items: center;
-          justify-content: center;
+          justify-content: ${align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center"};
           min-height: ${rowMinHeight};
           padding: ${effectivePaddingY}px 8px;
         }
@@ -598,7 +602,7 @@ class SeagullBadgesCard extends HTMLElement {
           overflow: auto;
         }
       </style>
-      <div class="sg-wrap ${this._config.full_width ? "sg-full" : ""}">${badgesHtml}</div>
+      <div class="sg-wrap ${align === "justified" ? "sg-full" : ""}">${badgesHtml}</div>
       ${debugHtml}
     `;
   }
