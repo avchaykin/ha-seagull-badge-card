@@ -185,6 +185,8 @@ badges:
 - `title_color` — template/string; overrides title text color when set
 - `subtitle` — template/string
 - `subtitle_color` — template/string; overrides subtitle text color when set
+- `text_size` — text block size multiplier (default `1`)
+- `text_offset` — horizontal text block offset in px (default `0`; positive moves right, negative moves left)
 - `badge` — optional small icon in top-right corner (with round background)
 - `badge_color` — template/string for badge icon color (default: main icon color)
 - `tap_action` — click action (default: `more-info`)
