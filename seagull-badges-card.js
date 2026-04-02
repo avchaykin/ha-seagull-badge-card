@@ -459,7 +459,7 @@ class SeagullBadgesCard extends HTMLElement {
           padding: 0 14px 0 8px;
           justify-content: flex-start;
           border-radius: calc(var(--sg-badge-h) / 2);
-          transition: padding .32s cubic-bezier(.22, .61, .36, 1), min-width .32s cubic-bezier(.22, .61, .36, 1), border-radius .24s ease;
+          transition: padding .32s cubic-bezier(.22, .61, .36, 1), min-width .32s cubic-bezier(.22, .61, .36, 1), border-radius .24s ease, gap .26s ease;
         }
         .sg-expand-slot {
           display: inline-flex;
@@ -489,7 +489,7 @@ class SeagullBadgesCard extends HTMLElement {
         .sg-expandable.sg-collapsed .sg-expand-slot {
           max-width: 0;
           opacity: 0;
-          display: none;
+          pointer-events: none;
         }
         .sg-icon-bg {
           width: var(--sg-badge-h);
@@ -703,16 +703,22 @@ class SeagullBadgesCard extends HTMLElement {
     return !!this._expandedState[key];
   }
 
-  _toggleExpanded(item) {
+  _toggleExpanded(item, el) {
     if (!item) return;
     if (!this._expandedState) this._expandedState = {};
     const key = item._sg_id || item.entity || "";
     if (!key) return;
-    this._expandedState[key] = !this._isExpanded(item);
-    this.hass = this._hass;
+    const nextExpanded = !this._isExpanded(item);
+    this._expandedState[key] = nextExpanded;
+
+    if (el?.classList?.contains("sg-expandable")) {
+      el.classList.toggle("sg-collapsed", !nextExpanded);
+    } else {
+      this.hass = this._hass;
+    }
   }
 
-  _runAction(item, actionCfg, defaultAction) {
+  _runAction(item, actionCfg, defaultAction, el) {
     const action = this._actionName(actionCfg, defaultAction);
     if (action === "none" || action === "nothing") return;
 
@@ -739,7 +745,7 @@ class SeagullBadgesCard extends HTMLElement {
     }
 
     if (action === "expand") {
-      this._toggleExpanded(item);
+      this._toggleExpanded(item, el);
       return;
     }
 
@@ -785,7 +791,7 @@ class SeagullBadgesCard extends HTMLElement {
         holdTimer = setTimeout(() => {
           holdFired = true;
           const ai = actionItemFromEvent(ev);
-          this._runAction(ai, ai.hold_action, "none");
+          this._runAction(ai, ai.hold_action, "none", ev.currentTarget);
         }, 500);
       },
       onPointerUp: () => {
@@ -802,14 +808,14 @@ class SeagullBadgesCard extends HTMLElement {
         clearTimeout(tapTimer);
         tapTimer = setTimeout(() => {
           const ai = actionItemFromEvent(ev);
-          this._runAction(ai, ai.tap_action, "more-info");
+          this._runAction(ai, ai.tap_action, "more-info", ev.currentTarget);
         }, tapDelayMs);
       },
       onDblClick: (ev) => {
         ev.preventDefault();
         clearTimeout(tapTimer);
         const ai = actionItemFromEvent(ev);
-        this._runAction(ai, ai.double_tap_action, "none");
+        this._runAction(ai, ai.double_tap_action, "none", ev.currentTarget);
       },
     };
   }
