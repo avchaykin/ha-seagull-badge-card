@@ -197,6 +197,9 @@ badges:
 - `double_tap_action` — double click action (default: `none`)
   - when `entity` is an array and second entity exists, default becomes `more-info` for `e[1]`
 - `hold_action` — hold action (default: `none`)
+- supported actions include `more-info`, `toggle`, `none`, and `expand`
+  - if `expand` is configured on any click type (`tap_action`, `double_tap_action`, or `hold_action`), the badge starts minimized (icon-only)
+  - triggering the configured `expand` action toggles minimized/expanded view (shows/hides text and extra/sub icons)
 
 ### Templates
 

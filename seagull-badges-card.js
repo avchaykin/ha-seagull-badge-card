@@ -51,7 +51,7 @@ class SeagullBadgesCard extends HTMLElement {
     }
 
     const prepared = this._expandBadges(this._config.badges || [], this._cardLevelInherited())
-      .map((badge) => this._prepareBadge(badge));
+      .map((badge, index) => this._prepareBadge({ ...badge, _sg_id: badge._sg_id ?? `b${index}` }));
 
     const normalVisible = prepared
       .filter((badge) => !badge._sub_icon_group)
@@ -339,6 +339,7 @@ class SeagullBadgesCard extends HTMLElement {
     });
 
     return {
+      _sg_id: badge._sg_id || "",
       entity: badge.entity || "",
       icon,
       iconColor,
@@ -553,18 +554,22 @@ class SeagullBadgesCard extends HTMLElement {
   }
 
   _renderBadge(item, index) {
-    const hasTitle = !!item.title;
-    const hasSubtitle = !!item.subtitle;
-    const hasSubIcon = !!item.subIcon || (Array.isArray(item.subIcons) && item.subIcons.length > 0);
+    const canExpand = this._hasExpandAction(item) && !!item.icon;
+    const isExpanded = canExpand ? this._isExpanded(item) : true;
+    const hasTitle = isExpanded && !!item.title;
+    const hasSubtitle = isExpanded && !!item.subtitle;
+    const hasSubIcon = isExpanded && (!!item.subIcon || (Array.isArray(item.subIcons) && item.subIcons.length > 0));
     const isCircle = !!item.icon && !hasTitle && !hasSubtitle && !hasSubIcon;
 
     const iconHtml = item.icon
       ? `<ha-icon class="sg-icon" style="color:${item.iconColor}" icon="${this._esc(item.icon)}"></ha-icon>`
       : "";
 
-    const subIcons = Array.isArray(item.subIcons) && item.subIcons.length
-      ? item.subIcons
-      : (item.subIcon ? [{ icon: item.subIcon, color: item.subIconColor }] : []);
+    const subIcons = hasSubIcon
+      ? (Array.isArray(item.subIcons) && item.subIcons.length
+        ? item.subIcons
+        : (item.subIcon ? [{ icon: item.subIcon, color: item.subIconColor }] : []))
+      : [];
 
     const subIconHtml = subIcons
       .map((si, siIndex) => item.subIconBg
@@ -574,7 +579,7 @@ class SeagullBadgesCard extends HTMLElement {
         : `<ha-icon class="sg-sub-icon sg-sub-icon-no-bg" data-sg-sub-index="${siIndex}" style="color:${si.color}; --sg-sub-icon-size:${item.subIconSize};" icon="${this._esc(si.icon)}"></ha-icon>`)
       .join("");
 
-    const extraIconHtml = item.extraIcon
+    const extraIconHtml = (isExpanded && item.extraIcon)
       ? `<span class="sg-extra" style="background:${this._withAlpha(item.extraIconColor, 0.14)};">
            <ha-icon class="sg-extra-icon" style="color:${item.extraIconColor}" icon="${this._esc(item.extraIcon)}"></ha-icon>
          </span>`
@@ -624,6 +629,34 @@ class SeagullBadgesCard extends HTMLElement {
     return defaultAction;
   }
 
+  _hasExpandAction(item) {
+    const names = [
+      this._actionName(item.tap_action, "more-info"),
+      this._actionName(item.double_tap_action, "none"),
+      this._actionName(item.hold_action, "none"),
+    ].map((a) => String(a || "").toLowerCase());
+    return names.includes("expand");
+  }
+
+  _isExpanded(item) {
+    if (!this._expandedState) this._expandedState = {};
+    const key = item?._sg_id || item?.entity || "";
+    if (!key) return true;
+    if (this._expandedState[key] === undefined) {
+      this._expandedState[key] = !this._hasExpandAction(item);
+    }
+    return !!this._expandedState[key];
+  }
+
+  _toggleExpanded(item) {
+    if (!item) return;
+    if (!this._expandedState) this._expandedState = {};
+    const key = item._sg_id || item.entity || "";
+    if (!key) return;
+    this._expandedState[key] = !this._isExpanded(item);
+    this.hass = this._hass;
+  }
+
   _runAction(item, actionCfg, defaultAction) {
     const action = this._actionName(actionCfg, defaultAction);
     if (action === "none" || action === "nothing") return;
@@ -647,6 +680,11 @@ class SeagullBadgesCard extends HTMLElement {
         : item.entity;
       if (!targetEntity) return;
       this._hass?.callService?.("homeassistant", "toggle", { entity_id: targetEntity });
+      return;
+    }
+
+    if (action === "expand") {
+      this._toggleExpanded(item);
       return;
     }
 
