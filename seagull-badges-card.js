@@ -1,5 +1,5 @@
-const SEAGULL_BADGES_CARD_VERSION = "0.1.7-dev";
-const SEAGULL_BADGES_CARD_COMMIT = "bd65f06";
+const SEAGULL_BADGES_CARD_VERSION = "0.1.8-dev";
+const SEAGULL_BADGES_CARD_COMMIT = "pending";
 
 class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
@@ -416,11 +416,20 @@ class SeagullBadgesCard extends HTMLElement {
         .sg-wrap { --sg-size: ${Number(this._config.badge_size) || 50}px; --sg-badge-h: calc(var(--sg-size) - 16px); --sg-expand-time: ${expandTimeMs}ms; --sg-expand-time-fast: ${Math.round(expandTimeMs * 0.7)}ms; }
         .sg-wrap {
           display: flex;
-          gap: ${gap}px;
           align-items: center;
           justify-content: ${align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center"};
           min-height: ${rowMinHeight};
           padding: ${effectivePaddingY}px 8px;
+        }
+        .sg-track {
+          display: flex;
+          gap: ${gap}px;
+          align-items: center;
+          width: max-content;
+          max-width: 100%;
+        }
+        .sg-wrap.sg-full .sg-track {
+          width: 100%;
         }
         .sg-wrap.sg-full .sg-item {
           width: 100%;
@@ -602,7 +611,7 @@ class SeagullBadgesCard extends HTMLElement {
           overflow: auto;
         }
       </style>
-      <div class="sg-wrap ${align === "justified" ? "sg-full" : ""}">${badgesHtml}</div>
+      <div class="sg-wrap ${align === "justified" ? "sg-full" : ""}"><div class="sg-track">${badgesHtml}</div></div>
       ${debugHtml}
     `;
   }
