@@ -157,14 +157,20 @@ class SeagullBadgesCard extends HTMLElement {
             this._tpl(b.sub_icon_color, b, this._tpl(b.color ?? b.icon_color, b, "#6b7280"))
           ), b);
           if (!icon) return null;
+          const tapAction = b.tap_action ?? { action: "more-info" };
+          const tapActionName = String(this._actionName(tapAction, "more-info") || "").toLowerCase();
+          const doubleTapDefault = tapActionName === "expand"
+            ? { action: "more-info" }
+            : (b.secondary_entity
+              ? { action: "more-info", entity: b.secondary_entity }
+              : { action: "none" });
+
           return {
             icon,
             color,
             entity: b.entity,
-            tap_action: b.tap_action ?? { action: "more-info" },
-            double_tap_action: b.double_tap_action ?? (b.secondary_entity
-              ? { action: "more-info", entity: b.secondary_entity }
-              : { action: "none" }),
+            tap_action: tapAction,
+            double_tap_action: b.double_tap_action ?? doubleTapDefault,
             hold_action: b.hold_action ?? { action: "none" },
           };
         })
@@ -329,6 +335,14 @@ class SeagullBadgesCard extends HTMLElement {
     const extraIcon = this._tpl(badge.badge ?? badge.extra_icon, badge, "");
     const extraIconColor = this._normalizeColor(this._tpl(badge.badge_color ?? badge.extra_icon_color, badge, iconColor || "#6b7280"), badge);
 
+    const tapAction = badge.tap_action ?? { action: "more-info" };
+    const tapActionName = String(this._actionName(tapAction, "more-info") || "").toLowerCase();
+    const doubleTapDefault = tapActionName === "expand"
+      ? { action: "more-info" }
+      : (badge.secondary_entity
+        ? { action: "more-info", entity: badge.secondary_entity }
+        : { action: "none" });
+
     this._debug("badge:normalize", {
       entity: badge.entity,
       icon,
@@ -363,10 +377,8 @@ class SeagullBadgesCard extends HTMLElement {
       borderSize,
       extraIcon,
       extraIconColor,
-      tap_action: badge.tap_action ?? { action: "more-info" },
-      double_tap_action: badge.double_tap_action ?? (badge.secondary_entity
-        ? { action: "more-info", entity: badge.secondary_entity }
-        : { action: "none" }),
+      tap_action: tapAction,
+      double_tap_action: badge.double_tap_action ?? doubleTapDefault,
       hold_action: badge.hold_action ?? { action: "none" },
     };
   }
