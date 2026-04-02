@@ -76,6 +76,7 @@ Card-level template registries:
 - `palette` — map of named colors. You can reuse these names in `color`, `sub_icon_color`, `badge_color`, and color templates
 - `padding_y` — top/bottom inner padding of badge row (set `0` for edge-touching layout). Defaults to `padding`.
   - when `padding_y: 0`, row min-height lock is disabled to remove extra top/bottom gaps
+- `expand_time` — expand/collapse animation duration in milliseconds (default `320`)
 
 `icon_template` / `color_template` value formats on each badge:
 

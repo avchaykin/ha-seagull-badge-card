@@ -399,6 +399,8 @@ class SeagullBadgesCard extends HTMLElement {
     const paddingY = Number(this._config.padding_y);
     const effectivePaddingY = Number.isFinite(paddingY) ? paddingY : padding;
     const rowMinHeight = effectivePaddingY === 0 ? "auto" : "var(--sg-size)";
+    const expandTime = Number(this._config.expand_time);
+    const expandTimeMs = Number.isFinite(expandTime) && expandTime > 0 ? expandTime : 320;
 
     const badgesHtml = items.map((item, index) => this._renderBadge(item, index)).join("");
     const debugHtml = this._config.debug
@@ -407,7 +409,7 @@ class SeagullBadgesCard extends HTMLElement {
 
     return `
       <style>
-        .sg-wrap { --sg-size: ${Number(this._config.badge_size) || 50}px; --sg-badge-h: calc(var(--sg-size) - 16px); }
+        .sg-wrap { --sg-size: ${Number(this._config.badge_size) || 50}px; --sg-badge-h: calc(var(--sg-size) - 16px); --sg-expand-time: ${expandTimeMs}ms; --sg-expand-time-fast: ${Math.round(expandTimeMs * 0.7)}ms; }
         .sg-wrap {
           display: flex;
           gap: ${gap}px;
@@ -459,7 +461,7 @@ class SeagullBadgesCard extends HTMLElement {
           padding: 0 14px 0 8px;
           justify-content: flex-start;
           border-radius: calc(var(--sg-badge-h) / 2);
-          transition: width .34s cubic-bezier(.22, .61, .36, 1), padding .32s cubic-bezier(.22, .61, .36, 1), min-width .32s cubic-bezier(.22, .61, .36, 1), border-radius .24s ease, gap .26s ease;
+          transition: width var(--sg-expand-time) cubic-bezier(.22, .61, .36, 1), padding var(--sg-expand-time) cubic-bezier(.22, .61, .36, 1), min-width var(--sg-expand-time) cubic-bezier(.22, .61, .36, 1), border-radius var(--sg-expand-time-fast) ease, gap var(--sg-expand-time-fast) ease;
         }
         .sg-expandable {
           will-change: width;
@@ -471,7 +473,7 @@ class SeagullBadgesCard extends HTMLElement {
           max-width: 1000px;
           opacity: 1;
           overflow: hidden;
-          transition: max-width .34s cubic-bezier(.22, .61, .36, 1), opacity .22s ease;
+          transition: max-width var(--sg-expand-time) cubic-bezier(.22, .61, .36, 1), opacity var(--sg-expand-time-fast) ease;
         }
         .sg-expandable:not(.sg-collapsed) .sg-expand-slot {
           overflow: visible;
@@ -706,6 +708,11 @@ class SeagullBadgesCard extends HTMLElement {
     return !!this._expandedState[key];
   }
 
+  _expandTimeMs() {
+    const n = Number(this._config?.expand_time);
+    return Number.isFinite(n) && n > 0 ? n : 320;
+  }
+
   _toggleExpanded(item, el) {
     if (!item) return;
     if (!this._expandedState) this._expandedState = {};
@@ -731,7 +738,7 @@ class SeagullBadgesCard extends HTMLElement {
         el.removeEventListener("transitionend", clear);
       };
       el.addEventListener("transitionend", clear);
-      setTimeout(clear, 420);
+      setTimeout(clear, this._expandTimeMs() + 120);
     } else {
       this.hass = this._hass;
     }
