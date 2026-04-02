@@ -304,6 +304,7 @@ class SeagullBadgesCard extends HTMLElement {
     const subtitle = this._tpl(badge.subtitle, badge, "");
     const textSize = Number(this._tpl(badge.text_size, badge, 1));
     const textOffset = Number(this._tpl(badge.text_offset, badge, 0));
+    const subtitleSize = Number(this._tpl(badge.subtitle_size, badge, 1));
     const titleColor = this._normalizeColor(this._tpl(badge.title_color, badge, iconColor || "#4b5563"), badge);
     const subtitleColor = this._normalizeColor(this._tpl(badge.subtitle_color, badge, iconColor || "#4b5563"), badge);
 
@@ -347,6 +348,8 @@ class SeagullBadgesCard extends HTMLElement {
       subtitleColor,
       textSize: Number.isFinite(textSize) && textSize > 0 ? textSize : 1,
       textOffset: Number.isFinite(textOffset) ? textOffset : 0,
+      subtitleSize: Number.isFinite(subtitleSize) && subtitleSize > 0 ? subtitleSize : 1,
+      titleSize: Number.isFinite(subtitleSize) && subtitleSize > 0 ? Math.max(0.2, 2 - subtitleSize) : 1,
       subIcon,
       subIcons: Array.isArray(badge._sub_icons) ? badge._sub_icons : undefined,
       subIconColor,
@@ -481,14 +484,14 @@ class SeagullBadgesCard extends HTMLElement {
         }
         .sg-title {
           font-weight: 700;
-          font-size: calc(10px * var(--sg-text-scale, 1));
+          font-size: calc(10px * var(--sg-text-scale, 1) * var(--sg-title-scale, 1));
           line-height: 1;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
         .sg-subtitle {
-          font-size: calc(10px * var(--sg-text-scale, 1));
+          font-size: calc(10px * var(--sg-text-scale, 1) * var(--sg-subtitle-scale, 1));
           line-height: 1;
           opacity: .85;
           white-space: nowrap;
@@ -588,7 +591,7 @@ class SeagullBadgesCard extends HTMLElement {
     const hasText = hasTitle || hasSubtitle;
 
     const textHtml = hasText
-      ? `<div class="sg-text ${hasTitle && hasSubtitle ? "" : "sg-single"} ${singleLine ? "sg-single-line" : ""}" style="color:${item.iconColor};--sg-text-scale:${item.textSize};--sg-text-offset-x:${item.textOffset};">
+      ? `<div class="sg-text ${hasTitle && hasSubtitle ? "" : "sg-single"} ${singleLine ? "sg-single-line" : ""}" style="color:${item.iconColor};--sg-text-scale:${item.textSize};--sg-text-offset-x:${item.textOffset};--sg-title-scale:${item.titleSize};--sg-subtitle-scale:${item.subtitleSize};">
            ${hasTitle ? `<div class="sg-title" style="color:${item.titleColor};">${this._esc(item.title)}</div>` : ""}
            ${hasSubtitle ? `<div class="sg-subtitle" style="color:${item.subtitleColor};">${this._esc(item.subtitle)}</div>` : ""}
          </div>`

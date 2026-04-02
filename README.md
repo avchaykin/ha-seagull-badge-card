@@ -187,6 +187,10 @@ badges:
 - `subtitle_color` — template/string; overrides subtitle text color when set
 - `text_size` — text block size multiplier (default `1`)
 - `text_offset` — horizontal text block offset in px (default `0`; positive moves right, negative moves left)
+- `subtitle_size` — relative subtitle size multiplier vs title balance (default `1`):
+  - `1` → title/subtitle are balanced equally
+  - `<1` → subtitle gets smaller and title gets proportionally larger (total vertical balance preserved)
+  - `>1` → subtitle gets larger and title gets proportionally smaller
 - `badge` — optional small icon in top-right corner (with round background)
 - `badge_color` — template/string for badge icon color (default: main icon color)
 - `tap_action` — click action (default: `more-info`)
