@@ -1,5 +1,5 @@
 const SEAGULL_BADGES_CARD_VERSION = "0.1.4-dev";
-const SEAGULL_BADGES_CARD_COMMIT = "pending";
+const SEAGULL_BADGES_CARD_COMMIT = "cb0a11a";
 
 class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
