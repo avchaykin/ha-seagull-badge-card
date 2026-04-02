@@ -71,6 +71,7 @@ Card-level template registries:
 - `color_templates` — map of `template_name: "{{ ... }}"` for colors
 - `align` — badge row alignment: `center` (default), `left`, `right`, `justified`
   - `justified` stretches badges to fill row width (same behavior as `full_width: true`)
+- `wrap` — `true/false`; when `true`, badges wrap to the next row if they overflow available width
 - `full_width` — legacy compatibility flag; when `true`, behaves like `align: justified`
 - `debug` — `true/false`; prints template resolution diagnostics to browser console and shows recent debug lines inside the card
 - `show_all` — `true/false`; when `true`, all badges are shown in dashboard edit mode (ignores per-badge `show*` filters)
