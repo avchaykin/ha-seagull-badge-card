@@ -380,7 +380,7 @@ class SeagullBadgesCard extends HTMLElement {
     const effectivePaddingY = Number.isFinite(paddingY) ? paddingY : padding;
     const rowMinHeight = effectivePaddingY === 0 ? "auto" : "var(--sg-size)";
 
-    const badgesHtml = items.map((item, index) => this._renderBadge(item, index)).join("");
+    const badgesHtml = items.map((item, index) => `<div class="sg-cell">${this._renderBadge(item, index)}</div>`).join("");
     const debugHtml = this._config.debug
       ? `<pre class="sg-debug">${this._esc((this._debugLines || []).join("\n"))}</pre>`
       : "";
@@ -389,12 +389,21 @@ class SeagullBadgesCard extends HTMLElement {
       <style>
         .sg-wrap { --sg-size: ${Number(this._config.badge_size) || 50}px; --sg-badge-h: calc(var(--sg-size) - 16px); }
         .sg-wrap {
-          display: grid;
-          grid-template-columns: repeat(${items.length}, minmax(0, 1fr));
+          display: flex;
           gap: ${gap}px;
           align-items: center;
           min-height: ${rowMinHeight};
           padding: ${effectivePaddingY}px 8px;
+        }
+        .sg-cell {
+          flex: 1 1 0;
+          min-width: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .sg-wrap.sg-full .sg-cell {
+          justify-content: stretch;
         }
         .sg-wrap.sg-full .sg-item {
           width: 100%;
