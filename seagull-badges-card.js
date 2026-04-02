@@ -525,11 +525,7 @@ class SeagullBadgesCard extends HTMLElement {
     const isCircle = !!item.icon && !hasTitle && !hasSubtitle && !hasSubIcon;
 
     const iconHtml = item.icon
-      ? (isCircle
-        ? `<span class="sg-icon-bg" style="background:${this._withAlpha(item.bgColor, 0.14)};">
-             <ha-icon class="sg-icon" style="color:${item.iconColor}" icon="${this._esc(item.icon)}"></ha-icon>
-           </span>`
-        : `<ha-icon class="sg-icon" style="color:${item.iconColor}" icon="${this._esc(item.icon)}"></ha-icon>`)
+      ? `<ha-icon class="sg-icon" style="color:${item.iconColor}" icon="${this._esc(item.icon)}"></ha-icon>`
       : "";
 
     const subIcons = Array.isArray(item.subIcons) && item.subIcons.length
