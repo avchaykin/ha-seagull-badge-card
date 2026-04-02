@@ -380,7 +380,7 @@ class SeagullBadgesCard extends HTMLElement {
     const effectivePaddingY = Number.isFinite(paddingY) ? paddingY : padding;
     const rowMinHeight = effectivePaddingY === 0 ? "auto" : "var(--sg-size)";
 
-    const badgesHtml = items.map((item, index) => `<div class="sg-cell">${this._renderBadge(item, index)}</div>`).join("");
+    const badgesHtml = items.map((item, index) => this._renderBadge(item, index)).join("");
     const debugHtml = this._config.debug
       ? `<pre class="sg-debug">${this._esc((this._debugLines || []).join("\n"))}</pre>`
       : "";
@@ -395,16 +395,6 @@ class SeagullBadgesCard extends HTMLElement {
           min-height: ${rowMinHeight};
           padding: ${effectivePaddingY}px 8px;
         }
-        .sg-cell {
-          flex: 1 1 0;
-          min-width: 0;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-        .sg-wrap.sg-full .sg-cell {
-          justify-content: stretch;
-        }
         .sg-wrap.sg-full .sg-item {
           width: 100%;
           margin: 0;
@@ -415,6 +405,7 @@ class SeagullBadgesCard extends HTMLElement {
         }
         .sg-item {
           min-width: 0;
+          flex: 1 1 0;
           position: relative;
           border-radius: 9999px;
           display: flex;
@@ -422,7 +413,7 @@ class SeagullBadgesCard extends HTMLElement {
           justify-content: center;
           gap: 6px;
           overflow: visible;
-          margin: 0 auto;
+          margin: 0;
           cursor: pointer;
           box-sizing: border-box;
           outline: none;
@@ -434,7 +425,7 @@ class SeagullBadgesCard extends HTMLElement {
         .sg-circle {
           width: var(--sg-badge-h);
           height: var(--sg-badge-h);
-          margin: 0 auto;
+          flex: 0 1 var(--sg-badge-h);
           box-sizing: border-box;
         }
         .sg-pill {
