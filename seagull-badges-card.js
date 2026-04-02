@@ -1,5 +1,5 @@
-const SEAGULL_BADGES_CARD_VERSION = "0.1.1-dev";
-const SEAGULL_BADGES_CARD_COMMIT = "7e1ac72";
+const SEAGULL_BADGES_CARD_VERSION = "0.1.2-dev";
+const SEAGULL_BADGES_CARD_COMMIT = "pending";
 
 class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
@@ -723,37 +723,44 @@ class SeagullBadgesCard extends HTMLElement {
 
     if (el?.classList?.contains("sg-expandable")) {
       const duration = this._expandTimeMs();
-      const originalTransition = el.style.transition;
+      const easing = "cubic-bezier(.22, .61, .36, 1)";
       const startWidth = el.getBoundingClientRect().width;
 
-      el.style.transition = "none";
       el.style.overflow = "hidden";
       el.style.width = `${startWidth}px`;
       void el.offsetWidth;
 
       el.classList.toggle("sg-collapsed", !nextExpanded);
 
-      // Measure target width in the new state
+      // compute target width in new state
       el.style.width = "";
       const endWidth = el.getBoundingClientRect().width;
 
-      // Animate from start -> end width explicitly
+      // lock back to start and animate to end
       el.style.width = `${startWidth}px`;
       void el.offsetWidth;
-      el.style.transition = `width ${duration}ms cubic-bezier(.22, .61, .36, 1)`;
 
-      requestAnimationFrame(() => {
-        el.style.width = `${endWidth}px`;
-      });
-
-      const clear = () => {
-        el.style.width = "";
-        el.style.overflow = "";
-        el.style.transition = originalTransition;
-        el.removeEventListener("transitionend", clear);
-      };
-      el.addEventListener("transitionend", clear);
-      setTimeout(clear, duration + 160);
+      if (typeof el.animate === "function") {
+        const anim = el.animate(
+          [{ width: `${startWidth}px` }, { width: `${endWidth}px` }],
+          { duration, easing, fill: "forwards" }
+        );
+        anim.onfinish = () => {
+          el.style.width = "";
+          el.style.overflow = "";
+        };
+        anim.oncancel = anim.onfinish;
+      } else {
+        el.style.transition = `width ${duration}ms ${easing}`;
+        requestAnimationFrame(() => {
+          el.style.width = `${endWidth}px`;
+        });
+        setTimeout(() => {
+          el.style.width = "";
+          el.style.overflow = "";
+          el.style.transition = "";
+        }, duration + 120);
+      }
     } else {
       this.hass = this._hass;
     }
