@@ -579,7 +579,7 @@ class SeagullBadgesCard extends HTMLElement {
 
     if (isCircle) {
       return `
-        <div class="sg-item sg-circle" data-sg-id="${id}" style="--sg-hover-bg:${this._withAlpha(item.bgColor, 0.22)};--sg-icon-scale:${item.iconSize};--sg-icon-offset-x:${item.iconOffset};border:${item.borderSize}px solid ${this._esc(item.borderColor)};">
+        <div class="sg-item sg-circle" data-sg-id="${id}" style="background:${this._withAlpha(item.bgColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.bgColor, 0.22)};--sg-icon-scale:${item.iconSize};--sg-icon-offset-x:${item.iconOffset};border:${item.borderSize}px solid ${this._esc(item.borderColor)};">
           ${iconHtml}
           ${extraIconHtml}
         </div>
