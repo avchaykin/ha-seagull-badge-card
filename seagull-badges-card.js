@@ -38,6 +38,7 @@ class SeagullBadgesCard extends HTMLElement {
       palette: config.palette ?? {},
       ...config,
     };
+    this._lastRenderedHtml = null;
   }
 
   set hass(hass) {
@@ -64,7 +65,10 @@ class SeagullBadgesCard extends HTMLElement {
 
     const visible = [...normalVisible, ...groupVisible];
 
-    this._card.innerHTML = this._render(visible);
+    const nextHtml = this._render(visible);
+    if (this._lastRenderedHtml === nextHtml) return;
+    this._lastRenderedHtml = nextHtml;
+    this._card.innerHTML = nextHtml;
 
     visible.forEach((item, index) => {
       const el = this._card.querySelector(`[data-sg-id="sg-${index}"]`);
