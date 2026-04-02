@@ -115,10 +115,11 @@ Legacy form (still supported):
 
 Inside `badges`, you can define a group object with nested `badges`.
 
-Group inheritance is now generic:
+Inheritance is generic and cascading:
 
-- any parameter defined on the group level is inherited by nested badges
-- any parameter defined directly on a badge overrides group value
+- any parameter defined on the **card level** is inherited by all nested groups and badges
+- any parameter defined on a **group level** is inherited by nested groups and badges
+- any parameter defined directly on a badge overrides inherited value
 - nested groups are supported (inheritance cascades)
 
 ### `sub_icon_group`
@@ -165,6 +166,8 @@ badges:
 - `show_above` — show only if numeric `states(entity)` is above this number
 - `icon` — left icon (mdi)
 - `icon_template` — named icon template reference (preferred over `icon` when set)
+- `icon_size` — icon size multiplier (default `1`)
+- `icon_offset` — horizontal icon offset in px (default `0`; positive moves right, negative moves left)
 - `sub_icon` — optional middle icon (shown between main icon and text)
 - `sub_icon_template` — named icon template reference for `sub_icon` (preferred over `sub_icon` when set)
 - `sub_icon_color` — template/string color for `sub_icon` (default: main icon color)
