@@ -1,5 +1,5 @@
-const SEAGULL_BADGES_CARD_VERSION = "0.2.3-dev";
-const SEAGULL_BADGES_CARD_COMMIT = "b15841c";
+const SEAGULL_BADGES_CARD_VERSION = "0.2.4-dev";
+const SEAGULL_BADGES_CARD_COMMIT = "pending";
 
 class SeagullBadgesCard extends HTMLElement {
   static getStubConfig() {
@@ -358,6 +358,7 @@ class SeagullBadgesCard extends HTMLElement {
 
     return {
       _sg_id: badge._sg_id || "",
+      br: badge.br,
       entity: badge.entity || "",
       icon,
       iconColor,
