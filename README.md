@@ -216,6 +216,9 @@ Available helpers/variables inside template:
 - `entity` — current default entity_id string (`e[0]`)
 - `e` — entity_id array when `entity` is configured as list
 - `s` — preset state array for multi-entity badges (`s[0] = states(e[0])`, `s[1] = states(e[1])`, ...)
+- `entity_states` — alias of `s`
+- `a` — preset attributes array for multi-entity badges (`a[0]['attr'] = state_attr(e[0], 'attr')`, ...)
+- `entity_attr` — alias of `a`
 - `hass`
 - `badge`
 - `config`
@@ -249,6 +252,11 @@ subtitle: "{{ round(Number(states(entity)), 1) + '°C' }}"
 # same using preset states array:
 # title: "{{ s[0] + '°' }}"
 # subtitle: "{{ s[1] + '%' }}"
+# alias works too:
+# title: "{{ entity_states[0] + '°' }}"
+# attributes shortcuts:
+# subtitle: "{{ a[0]['unit_of_measurement'] }}"
+# subtitle: "{{ entity_attr[0]['unit_of_measurement'] }}"
 ```
 
 ## Behavior
