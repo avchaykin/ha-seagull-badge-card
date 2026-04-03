@@ -159,6 +159,8 @@ badges:
 
 ### 1) Entity & visibility
 
+Badge visibility keys:
+
 - `entity` — entity id **or array of entity ids** used inside templates
   - note: each `badges` item can be either a badge object (`entity` + params) or a group object (`badges: [...]` + inherited params)
   - when array is used, first item becomes default `entity` (same as `e[0]`)
@@ -170,6 +172,16 @@ badges:
 - `show_not_in` — show only if `states(entity)` is not in provided array
 - `show_below` — show only if numeric `states(entity)` is below this number
 - `show_above` — show only if numeric `states(entity)` is above this number
+
+Sticker visibility keys (same semantics as `show*`, but applied only to sticker):
+- `sticker_show`
+- `sticker_show_value`
+- `sticker_show_not_value`
+- `sticker_show_in`
+- `sticker_show_not_in`
+- `sticker_show_below`
+- `sticker_show_above`
+
 - `br` — if present (any value), forces this badge to start from a new row
 
 ### 2) Icons & content

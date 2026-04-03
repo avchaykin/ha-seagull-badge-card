@@ -223,14 +223,12 @@ class SeagullBadgesCard extends HTMLElement {
     }
   }
 
-  _isBadgeVisible(badge) {
-    if (this._config?.show_all && this._isEditMode()) return true;
+  _isVisibleByPrefix(badge, prefix = "show", stateOverride) {
+    const state = stateOverride !== undefined
+      ? stateOverride
+      : this._hass?.states?.[badge.entity]?.state;
 
-    const showOk = this._toBool(this._tpl(badge.show, badge, true), true);
-    if (!showOk) return false;
-
-    const state = this._hass?.states?.[badge.entity]?.state;
-
+    const key = (suffix = "") => suffix ? `${prefix}_${suffix}` : prefix;
     const has = (k) => badge[k] !== undefined && badge[k] !== null;
     const eq = (a, b) => String(a) === String(b);
     const toArr = (v) => {
@@ -250,43 +248,51 @@ class SeagullBadgesCard extends HTMLElement {
       return [v];
     };
 
-    if (has("show_value")) {
-      const showValue = this._tpl(badge.show_value, badge, undefined);
+    const showOk = this._toBool(this._tpl(badge[key()], badge, true), true);
+    if (!showOk) return false;
+
+    if (has(key("value"))) {
+      const showValue = this._tpl(badge[key("value")], badge, undefined);
       if (!eq(state, showValue)) return false;
     }
 
-    if (has("show_not_value")) {
-      const showNotValue = this._tpl(badge.show_not_value, badge, undefined);
+    if (has(key("not_value"))) {
+      const showNotValue = this._tpl(badge[key("not_value")], badge, undefined);
       if (eq(state, showNotValue)) return false;
     }
 
-    if (has("show_in")) {
-      const showIn = this._tpl(badge.show_in, badge, undefined);
+    if (has(key("in"))) {
+      const showIn = this._tpl(badge[key("in")], badge, undefined);
       const arr = toArr(showIn).map((v) => String(v));
       if (!arr.includes(String(state))) return false;
     }
 
-    if (has("show_not_in")) {
-      const showNotIn = this._tpl(badge.show_not_in, badge, undefined);
+    if (has(key("not_in"))) {
+      const showNotIn = this._tpl(badge[key("not_in")], badge, undefined);
       const arr = toArr(showNotIn).map((v) => String(v));
       if (arr.includes(String(state))) return false;
     }
 
-    if (has("show_below")) {
-      const showBelow = this._tpl(badge.show_below, badge, undefined);
+    if (has(key("below"))) {
+      const showBelow = this._tpl(badge[key("below")], badge, undefined);
       const nState = Number(state);
       const nBelow = Number(showBelow);
       if (Number.isNaN(nState) || Number.isNaN(nBelow) || !(nState < nBelow)) return false;
     }
 
-    if (has("show_above")) {
-      const showAbove = this._tpl(badge.show_above, badge, undefined);
+    if (has(key("above"))) {
+      const showAbove = this._tpl(badge[key("above")], badge, undefined);
       const nState = Number(state);
       const nAbove = Number(showAbove);
       if (Number.isNaN(nState) || Number.isNaN(nAbove) || !(nState > nAbove)) return false;
     }
 
     return true;
+  }
+
+  _isBadgeVisible(badge) {
+    if (this._config?.show_all && this._isEditMode()) return true;
+    return this._isVisibleByPrefix(badge, "show");
   }
 
   _normalizeBadge(badge) {
@@ -365,6 +371,8 @@ class SeagullBadgesCard extends HTMLElement {
     const stickerSizeN = Number(this._tpl(badge.sticker_size, badge, 1));
     const stickerSize = Number.isFinite(stickerSizeN) && stickerSizeN > 0 ? stickerSizeN : 1;
 
+    const stickerVisible = this._isVisibleByPrefix(badge, "sticker_show", stateObj?.state);
+
     const widthRaw = this._tpl(badge.width, badge, undefined);
     const widthDisabled = widthRaw === undefined
       || widthRaw === null
@@ -414,8 +422,8 @@ class SeagullBadgesCard extends HTMLElement {
       subIconBg,
       borderColor,
       borderSize,
-      stickerIcon,
-      stickerText: this._str(stickerText),
+      stickerIcon: stickerVisible ? stickerIcon : "",
+      stickerText: stickerVisible ? this._str(stickerText) : "",
       stickerColor,
       stickerIconColor,
       stickerSize,
