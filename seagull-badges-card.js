@@ -778,6 +778,17 @@ class SeagullBadgesCard extends HTMLElement {
         ? String(actionCfg.entity)
         : item.entity;
       if (!targetEntity) return;
+
+      const [domain] = String(targetEntity).split(".");
+      const st = this._hass?.states?.[targetEntity]?.state;
+
+      // Generic HA toggle works for many domains, but not for lock-like entities.
+      if (domain === "lock") {
+        const svc = String(st).toLowerCase() === "locked" ? "unlock" : "lock";
+        this._hass?.callService?.("lock", svc, { entity_id: targetEntity });
+        return;
+      }
+
       this._hass?.callService?.("homeassistant", "toggle", { entity_id: targetEntity });
       return;
     }

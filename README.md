@@ -204,6 +204,7 @@ badges:
   - exception: if `tap_action: expand`, then default `double_tap_action` becomes `more-info` for the primary entity (unless explicitly overridden)
 - `hold_action` — hold action (default: `none`)
 - supported actions include `more-info`, `toggle`, `none`, and `expand`
+  - for `lock.*` entities, `toggle` is mapped automatically to `lock.lock` / `lock.unlock` based on current state
   - if `expand` is configured on any click type (`tap_action`, `double_tap_action`, or `hold_action`), the badge starts minimized (icon-only)
   - triggering the configured `expand` action toggles minimized/expanded view (shows/hides text and extra/sub icons)
 
