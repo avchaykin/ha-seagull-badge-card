@@ -1042,12 +1042,16 @@ class SeagullBadgesCard extends HTMLElement {
 
     const toJsFilters = (input) => {
       // minimal Jinja-like filter support:
-      // value|round, value|round(n), value|upper, value|lower
+      // value|round, value|round(n), value|upper, value|lower,
+      // value|capitalize, value|title, value|trim
       return String(input)
         .replace(/([^|\n]+?)\|\s*round\s*\(\s*([^)]*?)\s*\)/g, (_m, lhs, digits) => `round(${lhs.trim()}, ${digits.trim() || 0})`)
         .replace(/([^|\n]+?)\|\s*round\b/g, (_m, lhs) => `round(${lhs.trim()})`)
         .replace(/([^|\n]+?)\|\s*upper\b/g, (_m, lhs) => `String(${lhs.trim()} ?? "").toUpperCase()`)
-        .replace(/([^|\n]+?)\|\s*lower\b/g, (_m, lhs) => `String(${lhs.trim()} ?? "").toLowerCase()`);
+        .replace(/([^|\n]+?)\|\s*lower\b/g, (_m, lhs) => `String(${lhs.trim()} ?? "").toLowerCase()`)
+        .replace(/([^|\n]+?)\|\s*trim\b/g, (_m, lhs) => `String(${lhs.trim()} ?? "").trim()`)
+        .replace(/([^|\n]+?)\|\s*capitalize\b/g, (_m, lhs) => `((v)=>{v=String(v ?? "").trim(); return v ? (v.charAt(0).toUpperCase() + v.slice(1).toLowerCase()) : "";})(${lhs.trim()})`)
+        .replace(/([^|\n]+?)\|\s*title\b/g, (_m, lhs) => `String(${lhs.trim()} ?? "").toLowerCase().replace(/\\b\\w/g, (c) => c.toUpperCase())`);
     };
 
     const code = toJsFilters(String(expr)
