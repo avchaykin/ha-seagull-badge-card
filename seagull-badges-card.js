@@ -871,6 +871,29 @@ class SeagullBadgesCard extends HTMLElement {
       return;
     }
 
+    if (action === "navigate") {
+      if (typeof actionCfg !== "object") return;
+      const path = actionCfg.navigation_path ?? actionCfg.navigationPath ?? actionCfg.url_path ?? actionCfg.path;
+      if (!path) return;
+      window.history.pushState(null, "", String(path));
+      window.dispatchEvent(new Event("location-changed"));
+      return;
+    }
+
+    if (action === "perform-action" || action === "perform_action" || action === "call-service" || action === "call_service") {
+      if (typeof actionCfg !== "object") return;
+      const performAction = actionCfg.perform_action ?? actionCfg.service;
+      if (!performAction || typeof performAction !== "string" || !performAction.includes(".")) return;
+      const [domain, service] = performAction.split(".");
+      if (!domain || !service) return;
+
+      const data = actionCfg.data ?? actionCfg.service_data ?? {};
+      const target = actionCfg.target ?? {};
+      const payload = { ...(data || {}), ...(target || {}) };
+      this._hass?.callService?.(domain, service, payload);
+      return;
+    }
+
     if (action === "expand") {
       this._toggleExpanded(item, el);
       return;

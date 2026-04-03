@@ -243,7 +243,9 @@ Sticker visibility keys (same semantics as `show*`, but applied only to sticker)
   - when `entity` is an array and second entity exists, default becomes `more-info` for `e[1]`
   - exception: if `tap_action: expand`, then default `double_tap_action` becomes `more-info` for the primary entity (unless explicitly overridden)
 - `hold_action` — hold action (default: `none`)
-- supported actions include `more-info`, `toggle`, `none`, and `expand`
+- supported actions include `more-info`, `toggle`, `navigate`, `perform-action`, `none`, and `expand`
+  - `navigate` supports standard HA params: `navigation_path` (also accepts `url_path`)
+  - `perform-action` supports standard HA params: `perform_action` (or `service`) + `data`/`service_data` + `target`
   - for `lock.*` entities, `toggle` is mapped automatically to `lock.lock` / `lock.unlock` based on current state
   - if `expand` is configured on any click type (`tap_action`, `double_tap_action`, or `hold_action`), the badge starts minimized (icon-only)
   - triggering the configured `expand` action toggles minimized/expanded view (shows/hides text and extra/sub icons)
