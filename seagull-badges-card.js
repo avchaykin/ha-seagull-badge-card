@@ -544,7 +544,7 @@ class SeagullBadgesCard extends HTMLElement {
           max-width: 100%;
           height: var(--sg-badge-h);
           box-sizing: border-box;
-          padding: 0 14px 0 8px;
+          padding: 0 14px 0 0;
           justify-content: flex-start;
           border-radius: calc(var(--sg-badge-h) / 2);
           transition: width var(--sg-expand-time) cubic-bezier(.22, .61, .36, 1), padding var(--sg-expand-time) cubic-bezier(.22, .61, .36, 1), min-width var(--sg-expand-time) cubic-bezier(.22, .61, .36, 1), border-radius var(--sg-expand-time-fast) ease, gap var(--sg-expand-time-fast) ease;
@@ -593,9 +593,14 @@ class SeagullBadgesCard extends HTMLElement {
           transform: translateX(calc(var(--sg-icon-offset-x, 0) * 1px));
         }
         .sg-pill > .sg-icon {
-          flex: 0 0 auto;
+          flex: 0 0 var(--sg-badge-h);
+          width: var(--sg-badge-h);
+          min-width: var(--sg-badge-h);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
           margin-left: 0;
-          margin-right: 6px;
+          margin-right: 4px;
         }
         .sg-sub-icon-bg {
           width: calc(var(--sg-size) * var(--sg-sub-icon-size, 0.5));
