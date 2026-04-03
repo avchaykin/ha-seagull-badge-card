@@ -179,11 +179,14 @@ badges:
 - `sub_icon_color_template` — named color template reference for `sub_icon` (preferred over `sub_icon_color` when set)
 - `sub_icon_size` — size of `sub_icon` relative to main badge size (`1` = same size as main icon area; default `0.5`)
 - `sub_icon_bg` — `true/false`; when `false`, `sub_icon` is shown without circular background (default `true`)
-- `color` — template/string; default `#4b5563` (badge background/accent color)
+- `color` — template/string accent color (used for icon/text defaults)
   - supports HA aliases: `primary`, `secondary`, `disabled`, `active`, `inactive`
   - for direct HA vars use CSS syntax, e.g. `var(--primary-color)`
-- `icon_color` — template/string; icon/text color override (default: same as `color`)
-- `color_template` — named color template reference (preferred over `color` when set)
+- `color_template` — named color template reference for accent color (preferred over `color` when set)
+- `background` — template/string background color (default: same as resolved `color`)
+  - set `false` / `none` / `0` to make background transparent
+- `background_template` — named color template reference for `background` (preferred over `background` when set)
+- `icon_color` — template/string; icon/text color override (default: same as accent `color`)
 - `border` — border color around badge (template/string, supports palette and HA color aliases). Default: same as icon color
 - `border_size` — border width in px (default `0`, no border)
 - `title` — template/string

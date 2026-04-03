@@ -299,14 +299,26 @@ class SeagullBadgesCard extends HTMLElement {
       badge,
       this._tpl(badge.icon, badge, iconFallback)
     );
-    const bgColor = this._normalizeColor(this._resolveNamedTemplate(
+    const accentColor = this._normalizeColor(this._resolveNamedTemplate(
       "color",
       badge.color_template,
       badge,
       this._tpl(badge.color, badge, "#4b5563")
     ), badge);
 
-    const iconColor = this._normalizeColor(this._tpl(badge.icon_color, badge, bgColor || "#4b5563"), badge);
+    const bgRaw = this._resolveNamedTemplate(
+      "color",
+      badge.background_template,
+      badge,
+      this._tpl(badge.background, badge, accentColor)
+    );
+    const bgDisabled = bgRaw === false
+      || bgRaw === null
+      || bgRaw === undefined
+      || (typeof bgRaw === "string" && ["", "none", "false", "off", "0"].includes(bgRaw.trim().toLowerCase()));
+    const bgColor = bgDisabled ? "transparent" : this._normalizeColor(bgRaw, badge);
+
+    const iconColor = this._normalizeColor(this._tpl(badge.icon_color, badge, accentColor || "#4b5563"), badge);
     const iconSize = Number(this._tpl(badge.icon_size, badge, 1));
     const iconOffset = Number(this._tpl(badge.icon_offset, badge, 0));
 
