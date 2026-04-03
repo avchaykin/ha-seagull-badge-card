@@ -651,19 +651,25 @@ class SeagullBadgesCard extends HTMLElement {
         }
         .sg-sticker {
           position: absolute;
-          top: calc(var(--sg-badge-h) * 0.1464466);
-          right: calc(var(--sg-badge-h) * 0.1464466);
-          height: calc(15px * var(--sg-sticker-size, 1));
-          min-width: calc(15px * var(--sg-sticker-size, 1));
+          --sg-sticker-h: calc(15px * var(--sg-sticker-size, 1));
+          --sg-sticker-d: calc(var(--sg-badge-h) * 0.1464466);
+          top: calc(var(--sg-sticker-d) - (var(--sg-sticker-h) / 2));
+          right: calc(var(--sg-sticker-d) - (var(--sg-sticker-h) / 2));
+          height: var(--sg-sticker-h);
+          min-width: var(--sg-sticker-h);
           border-radius: 9999px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
           gap: calc(3px * var(--sg-sticker-size, 1));
           padding: 0 calc(4px * var(--sg-sticker-size, 1));
-          transform: translateY(-50%);
           box-sizing: border-box;
           white-space: nowrap;
+        }
+        .sg-sticker.sg-sticker-icon-only {
+          width: var(--sg-sticker-h);
+          min-width: var(--sg-sticker-h);
+          padding: 0;
         }
         .sg-sticker-icon {
           --mdc-icon-size: calc(11px * var(--sg-sticker-size, 1));
@@ -715,8 +721,9 @@ class SeagullBadgesCard extends HTMLElement {
         : `<ha-icon class="sg-sub-icon sg-sub-icon-no-bg" data-sg-sub-index="${siIndex}" style="color:${si.color}; --sg-sub-icon-size:${item.subIconSize};" icon="${this._esc(si.icon)}"></ha-icon>`)
       .join("");
 
+    const hasStickerText = !!item.stickerText;
     const stickerHtml = (item.stickerIcon || item.stickerText)
-      ? `<span class="sg-sticker" style="background:${this._esc(item.stickerColor)};color:${this._esc(item.stickerIconColor)};--sg-sticker-size:${item.stickerSize};">
+      ? `<span class="sg-sticker ${hasStickerText ? "" : "sg-sticker-icon-only"}" style="background:${this._esc(item.stickerColor)};color:${this._esc(item.stickerIconColor)};--sg-sticker-size:${item.stickerSize};">
            ${item.stickerIcon ? `<ha-icon class="sg-sticker-icon" style="color:${item.stickerIconColor}" icon="${this._esc(item.stickerIcon)}"></ha-icon>` : ""}
            ${item.stickerText ? `<span class="sg-sticker-text">${this._esc(item.stickerText)}</span>` : ""}
          </span>`

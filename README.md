@@ -181,7 +181,8 @@ badges:
 - `title` — template/string
 - `subtitle` — template/string
 - `sticker` — optional sticker icon in top-right corner
-- `sticker_text` — optional sticker text (sticker expands to the left)
+- `sticker_text` — optional sticker text (sticker expands to the left, right edge stays anchored)
+  - icon-only sticker is rendered as a perfect circle
   - backward compatibility: legacy `badge` / `badge_color` still work
 
 ### 3) Colors
