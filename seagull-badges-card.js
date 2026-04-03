@@ -1015,6 +1015,10 @@ class SeagullBadgesCard extends HTMLElement {
       return id && hass?.states?.[id] ? hass.states[id].state : undefined;
     };
 
+    // Preset states array for multi-entity badges:
+    // s[0] === states(entity[0]), s[1] === states(entity[1]), ...
+    const s = e.map((id) => states(id));
+
     const state_attr = (entityId, attr) => {
       const id = entityId || entity;
       return id && hass?.states?.[id] ? hass.states[id].attributes?.[attr] : undefined;
@@ -1051,6 +1055,7 @@ class SeagullBadgesCard extends HTMLElement {
         "hass",
         "entity",
         "e",
+        "s",
         "badge",
         "config",
         "states",
@@ -1067,6 +1072,7 @@ class SeagullBadgesCard extends HTMLElement {
         hass,
         entity,
         e,
+        s,
         badge,
         this._config,
         states,

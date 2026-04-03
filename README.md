@@ -215,6 +215,7 @@ Available helpers/variables inside template:
 
 - `entity` — current default entity_id string (`e[0]`)
 - `e` — entity_id array when `entity` is configured as list
+- `s` — preset state array for multi-entity badges (`s[0] = states(e[0])`, `s[1] = states(e[1])`, ...)
 - `hass`
 - `badge`
 - `config`
@@ -245,6 +246,9 @@ subtitle: "{{ round(Number(states(entity)), 1) + '°C' }}"
 # entity: [sensor.temp_living, sensor.humidity_living]
 # title: "{{ states(e[0]) + '°' }}"
 # subtitle: "{{ states(e[1]) + '%' }}"
+# same using preset states array:
+# title: "{{ s[0] + '°' }}"
+# subtitle: "{{ s[1] + '%' }}"
 ```
 
 ## Behavior
