@@ -196,6 +196,10 @@ badges:
   - `1` → title/subtitle are balanced equally
   - `<1` → subtitle gets smaller and title gets proportionally larger (total vertical balance preserved)
   - `>1` → subtitle gets larger and title gets proportionally smaller
+- `width` — minimum badge width in relative units (`1` = round badge width, `2` = double width, etc.)
+  - if content is wider, badge still expands to fit content
+  - `none`/`false`/`0` disables explicit min-width
+  - when set, has priority over `align: justified` (badge is not stretched to fill equally)
 - `badge` — optional small icon in top-right corner (with round background)
 - `badge_color` — template/string for badge icon color (default: main icon color)
 - `tap_action` — click action (default: `more-info`)
@@ -271,7 +275,8 @@ subtitle: "{{ round(Number(states(entity)), 1) + '°C' }}"
 
 ## Behavior
 
-- Visible badges are laid out in a single row with equal width columns.
+- Visible badges are laid out in a single row; with `align: justified` badges stretch to equal widths.
+- Badges with explicit `width` keep their own minimum width and are not force-stretched by `align: justified`.
 - If only icon is set (no title/subtitle), badge renders as a circle.
 - Otherwise badge renders as rounded pill with icon + text block.
 - Badge text color follows icon color.

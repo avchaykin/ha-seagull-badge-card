@@ -339,6 +339,14 @@ class SeagullBadgesCard extends HTMLElement {
     const extraIcon = this._tpl(badge.badge ?? badge.extra_icon, badge, "");
     const extraIconColor = this._normalizeColor(this._tpl(badge.badge_color ?? badge.extra_icon_color, badge, iconColor || "#6b7280"), badge);
 
+    const widthRaw = this._tpl(badge.width, badge, undefined);
+    const widthDisabled = widthRaw === undefined
+      || widthRaw === null
+      || (typeof widthRaw === "string" && ["", "none", "false", "off", "0"].includes(widthRaw.trim().toLowerCase()))
+      || widthRaw === false;
+    const widthNum = Number(widthRaw);
+    const widthUnits = (!widthDisabled && Number.isFinite(widthNum) && widthNum > 0) ? widthNum : null;
+
     const tapAction = badge.tap_action ?? { action: "more-info" };
     const tapActionName = String(this._actionName(tapAction, "more-info") || "").toLowerCase();
     const doubleTapDefault = tapActionName === "expand"
@@ -382,6 +390,7 @@ class SeagullBadgesCard extends HTMLElement {
       borderSize,
       extraIcon,
       extraIconColor,
+      widthUnits,
       tap_action: tapAction,
       double_tap_action: badge.double_tap_action ?? doubleTapDefault,
       hold_action: badge.hold_action ?? { action: "none" },
@@ -454,6 +463,10 @@ class SeagullBadgesCard extends HTMLElement {
           flex: 1 1 0;
           margin: 0;
         }
+        .sg-wrap.sg-full .sg-item.sg-fixed-width {
+          width: auto;
+          flex: 0 1 auto;
+        }
         .sg-wrap.sg-full .sg-pill {
           width: 100%;
           max-width: 100%;
@@ -479,12 +492,17 @@ class SeagullBadgesCard extends HTMLElement {
         }
         .sg-circle {
           width: var(--sg-badge-h);
+          min-width: calc(var(--sg-badge-h) * var(--sg-min-w-units, 1));
           height: var(--sg-badge-h);
           flex: 0 1 var(--sg-badge-h);
           box-sizing: border-box;
         }
+        .sg-circle.sg-fixed-width {
+          width: auto;
+          padding: 0 8px;
+        }
         .sg-pill {
-          min-width: var(--sg-size);
+          min-width: calc(var(--sg-badge-h) * var(--sg-min-w-units, 1));
           width: max-content;
           max-width: 100%;
           height: var(--sg-badge-h);
@@ -666,9 +684,13 @@ class SeagullBadgesCard extends HTMLElement {
 
     const id = `sg-${index}`;
 
+    const widthUnits = Number(item.widthUnits);
+    const hasWidthUnits = Number.isFinite(widthUnits) && widthUnits > 0;
+    const widthStyle = hasWidthUnits ? `;--sg-min-w-units:${widthUnits}` : "";
+
     if (isCircle) {
       return `
-        <div class="sg-item sg-circle" data-sg-id="${id}" style="background:${this._withAlpha(item.bgColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.bgColor, 0.22)};--sg-icon-scale:${item.iconSize};--sg-icon-offset-x:${item.iconOffset};border:${item.borderSize}px solid ${this._esc(item.borderColor)};">
+        <div class="sg-item sg-circle ${hasWidthUnits ? "sg-fixed-width" : ""}" data-sg-id="${id}" style="background:${this._withAlpha(item.bgColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.bgColor, 0.22)};--sg-icon-scale:${item.iconSize};--sg-icon-offset-x:${item.iconOffset};border:${item.borderSize}px solid ${this._esc(item.borderColor)}${widthStyle};">
           ${iconHtml}
           ${extraIconHtml}
         </div>
@@ -695,13 +717,14 @@ class SeagullBadgesCard extends HTMLElement {
       canExpand ? "sg-expandable" : "",
       canExpand && !isExpanded ? "sg-collapsed" : "",
       item.icon ? "" : "sg-text-only",
-      (!hasText && item.icon && item.subIcon) ? "sg-no-text-icons" : ""
+      (!hasText && item.icon && item.subIcon) ? "sg-no-text-icons" : "",
+      hasWidthUnits ? "sg-fixed-width" : ""
     ]
       .filter(Boolean)
       .join(" ");
 
     return `
-      <div class="${pillClasses}" data-sg-id="${id}" style="background:${this._withAlpha(item.bgColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.bgColor, 0.22)};--sg-icon-scale:${item.iconSize};--sg-icon-offset-x:${item.iconOffset};border:${item.borderSize}px solid ${this._esc(item.borderColor)};">
+      <div class="${pillClasses}" data-sg-id="${id}" style="background:${this._withAlpha(item.bgColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.bgColor, 0.22)};--sg-icon-scale:${item.iconSize};--sg-icon-offset-x:${item.iconOffset};border:${item.borderSize}px solid ${this._esc(item.borderColor)}${widthStyle};">
         ${iconHtml}
         ${detailsHtml}
         ${(isExpanded || !canExpand) ? extraIconHtml : ""}
