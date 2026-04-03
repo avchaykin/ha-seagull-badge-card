@@ -327,6 +327,7 @@ class SeagullBadgesCard extends HTMLElement {
     const iconColor = this._normalizeColor(this._tpl(badge.icon_color, badge, accentColor || "#4b5563"), badge);
     const iconSize = Number(this._tpl(badge.icon_size, badge, 1));
     const iconOffset = Number(this._tpl(badge.icon_offset, badge, 0));
+    const iconGap = Number(this._tpl(badge.icon_gap, badge, this._config?.icon_gap ?? 2));
 
     const borderColor = this._normalizeColor(this._tpl(badge.border, badge, iconColor || "#4b5563"), badge);
     const borderSize = Number(this._tpl(badge.border_size, badge, 0));
@@ -406,6 +407,7 @@ class SeagullBadgesCard extends HTMLElement {
       iconColor,
       iconSize: Number.isFinite(iconSize) && iconSize > 0 ? iconSize : 1,
       iconOffset: Number.isFinite(iconOffset) ? iconOffset : 0,
+      iconGap: Number.isFinite(iconGap) ? iconGap : 2,
       bgColor,
       title: this._str(title),
       subtitle: this._str(subtitle),
@@ -546,6 +548,7 @@ class SeagullBadgesCard extends HTMLElement {
           box-sizing: border-box;
           padding: 0 14px 0 0;
           justify-content: flex-start;
+          gap: 0;
           border-radius: calc(var(--sg-badge-h) / 2);
           transition: width var(--sg-expand-time) cubic-bezier(.22, .61, .36, 1), padding var(--sg-expand-time) cubic-bezier(.22, .61, .36, 1), min-width var(--sg-expand-time) cubic-bezier(.22, .61, .36, 1), border-radius var(--sg-expand-time-fast) ease, gap var(--sg-expand-time-fast) ease;
         }
@@ -600,7 +603,7 @@ class SeagullBadgesCard extends HTMLElement {
           align-items: center;
           justify-content: center;
           margin-left: 0;
-          margin-right: 4px;
+          margin-right: calc(var(--sg-icon-gap, 2) * 1px);
         }
         .sg-sub-icon-bg {
           width: calc(var(--sg-size) * var(--sg-sub-icon-size, 0.5));
@@ -750,7 +753,7 @@ class SeagullBadgesCard extends HTMLElement {
 
     if (isCircle) {
       return `
-        <div class="sg-item sg-circle ${hasWidthUnits ? "sg-fixed-width" : ""}" data-sg-id="${id}" style="background:${this._withAlpha(item.bgColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.bgColor, 0.22)};--sg-icon-scale:${item.iconSize};--sg-icon-offset-x:${item.iconOffset};border:${item.borderSize}px solid ${this._esc(item.borderColor)}${widthStyle};">
+        <div class="sg-item sg-circle ${hasWidthUnits ? "sg-fixed-width" : ""}" data-sg-id="${id}" style="background:${this._withAlpha(item.bgColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.bgColor, 0.22)};--sg-icon-scale:${item.iconSize};--sg-icon-offset-x:${item.iconOffset};--sg-icon-gap:${item.iconGap};border:${item.borderSize}px solid ${this._esc(item.borderColor)}${widthStyle};">
           ${iconHtml}
           ${stickerHtml}
         </div>
@@ -784,7 +787,7 @@ class SeagullBadgesCard extends HTMLElement {
       .join(" ");
 
     return `
-      <div class="${pillClasses}" data-sg-id="${id}" style="background:${this._withAlpha(item.bgColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.bgColor, 0.22)};--sg-icon-scale:${item.iconSize};--sg-icon-offset-x:${item.iconOffset};border:${item.borderSize}px solid ${this._esc(item.borderColor)}${widthStyle};">
+      <div class="${pillClasses}" data-sg-id="${id}" style="background:${this._withAlpha(item.bgColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.bgColor, 0.22)};--sg-icon-scale:${item.iconSize};--sg-icon-offset-x:${item.iconOffset};--sg-icon-gap:${item.iconGap};border:${item.borderSize}px solid ${this._esc(item.borderColor)}${widthStyle};">
         ${iconHtml}
         ${detailsHtml}
         ${(isExpanded || !canExpand) ? stickerHtml : ""}
