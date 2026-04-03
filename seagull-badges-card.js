@@ -1041,10 +1041,13 @@ class SeagullBadgesCard extends HTMLElement {
     };
 
     const toJsFilters = (input) => {
-      // minimal Jinja-like filter support: value|round and value|round(n)
+      // minimal Jinja-like filter support:
+      // value|round, value|round(n), value|upper, value|lower
       return String(input)
         .replace(/([^|\n]+?)\|\s*round\s*\(\s*([^)]*?)\s*\)/g, (_m, lhs, digits) => `round(${lhs.trim()}, ${digits.trim() || 0})`)
-        .replace(/([^|\n]+?)\|\s*round\b/g, (_m, lhs) => `round(${lhs.trim()})`);
+        .replace(/([^|\n]+?)\|\s*round\b/g, (_m, lhs) => `round(${lhs.trim()})`)
+        .replace(/([^|\n]+?)\|\s*upper\b/g, (_m, lhs) => `String(${lhs.trim()} ?? "").toUpperCase()`)
+        .replace(/([^|\n]+?)\|\s*lower\b/g, (_m, lhs) => `String(${lhs.trim()} ?? "").toLowerCase()`);
     };
 
     const code = toJsFilters(String(expr)
@@ -1075,7 +1078,8 @@ class SeagullBadgesCard extends HTMLElement {
         "template_name",
         "icon_templates",
         "color_templates",
-        `return (${code});`
+        "locals",
+        `with (locals || {}) { return (${code}); }`
       );
       const out = fn(
         hass,
@@ -1094,7 +1098,8 @@ class SeagullBadgesCard extends HTMLElement {
         extraCtx.value,
         extraCtx.template_name,
         this._config?.icon_templates,
-        this._config?.color_templates
+        this._config?.color_templates,
+        extraCtx.locals
       );
       return out ?? "";
     } catch (e) {
@@ -1107,6 +1112,8 @@ class SeagullBadgesCard extends HTMLElement {
   _tplJinja(template, badge, fallback = "", extraCtx = {}) {
     const tokens = String(template).split(/(\{\%[\s\S]*?\%\}|\{\{[\s\S]*?\}\})/g).filter(Boolean);
     const stack = [];
+    const locals = { ...(extraCtx?.locals || {}) };
+    const evalCtx = { ...extraCtx, locals };
 
     const active = () => stack.every((f) => f.active);
     let out = "";
@@ -1115,7 +1122,7 @@ class SeagullBadgesCard extends HTMLElement {
       if (token.startsWith("{{") && token.endsWith("}}")) {
         if (!active()) continue;
         const expr = token.slice(2, -2);
-        const v = this._evalExpr(expr, badge, extraCtx);
+        const v = this._evalExpr(expr, badge, evalCtx);
         out += (v === undefined || v === null) ? "" : String(v);
         continue;
       }
@@ -1123,9 +1130,18 @@ class SeagullBadgesCard extends HTMLElement {
       if (token.startsWith("{%") && token.endsWith("%}")) {
         const raw = token.slice(2, -2).trim();
 
+        if (raw.startsWith("set ")) {
+          if (!active()) continue;
+          const m = raw.match(/^set\s+([A-Za-z_$][\w$]*)\s*=\s*([\s\S]+)$/);
+          if (!m) continue;
+          const [, varName, expr] = m;
+          locals[varName] = this._evalExpr(expr, badge, evalCtx);
+          continue;
+        }
+
         if (raw.startsWith("if ")) {
           const parentActive = active();
-          const matched = parentActive && this._toBool(this._evalExpr(raw.slice(3), badge, extraCtx), false);
+          const matched = parentActive && this._toBool(this._evalExpr(raw.slice(3), badge, evalCtx), false);
           stack.push({ parentActive, matched, active: matched });
           continue;
         }
@@ -1136,7 +1152,7 @@ class SeagullBadgesCard extends HTMLElement {
           if (top.matched) {
             top.active = false;
           } else {
-            const ok = top.parentActive && this._toBool(this._evalExpr(raw.slice(5), badge, extraCtx), false);
+            const ok = top.parentActive && this._toBool(this._evalExpr(raw.slice(5), badge, evalCtx), false);
             top.active = ok;
             if (ok) top.matched = true;
           }

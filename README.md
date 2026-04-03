@@ -209,7 +209,9 @@ badges:
 
 ### Templates
 
-Templates support expressions in `{{ ... }}` and conditional Jinja-style blocks `{% if ... %}...{% elif ... %}...{% else %}...{% endif %}`.
+Templates support expressions in `{{ ... }}` and Jinja-style blocks:
+- conditionals: `{% if ... %}...{% elif ... %}...{% else %}...{% endif %}`
+- local variables: `{% set x = ... %}` (usable in following template expressions/blocks)
 
 Available helpers/variables inside template:
 
@@ -226,7 +228,8 @@ Available helpers/variables inside template:
 - `state_attr(entity_id, attr)`
 - `is_state(entity_id, value)`
 - `round(value, digits)` — numeric rounding helper for title/subtitle/templates
-  - Jinja-style filter syntax is also supported: `{{ states(e[1])|round }}` / `{{ states(e[1])|round(1) }}`
+  - Jinja-style filter syntax is supported: `|round`, `|round(n)`, `|upper`, `|lower`
+  - examples: `{{ states(e[1])|round }}`, `{{ states(e[1])|round(1) }}`, `{{ states(entity)|upper }}`
 - `value` — input param for named templates (`icon_template` / `color_template`)
 - `template_name` — current named template id
 - `icon_templates` — alias for `config.icon_templates`
@@ -245,6 +248,12 @@ show_above: 10
 
 title: "{{ states(entity) === 'on' ? 'Active' : 'Idle' }}"
 subtitle: "{{ round(Number(states(entity)), 1) + '°C' }}"
+
+# set + reuse example
+# sub_icon: |
+#   {% set st = states(entity)|upper %}
+#   {% if st == 'WASHING' %}mdi:roman-numeral-1{% else %}mdi:stop{% endif %}
+
 # multi-entity example
 # entity: [sensor.temp_living, sensor.humidity_living]
 # title: "{{ states(e[0]) + '°' }}"
