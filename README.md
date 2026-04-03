@@ -157,6 +157,8 @@ badges:
 
 ## Badge fields
 
+### 1) Entity & visibility
+
 - `entity` — entity id **or array of entity ids** used inside templates
   - note: each `badges` item can be either a badge object (`entity` + params) or a group object (`badges: [...]` + inherited params)
   - when array is used, first item becomes default `entity` (same as `e[0]`)
@@ -169,16 +171,19 @@ badges:
 - `show_below` — show only if numeric `states(entity)` is below this number
 - `show_above` — show only if numeric `states(entity)` is above this number
 - `br` — if present (any value), forces this badge to start from a new row
+
+### 2) Icons & content
+
 - `icon` — left icon (mdi)
 - `icon_template` — named icon template reference (preferred over `icon` when set)
-- `icon_size` — icon size multiplier (default `1`)
-- `icon_offset` — horizontal icon offset in px (default `0`; positive moves right, negative moves left)
 - `sub_icon` — optional middle icon (shown between main icon and text)
 - `sub_icon_template` — named icon template reference for `sub_icon` (preferred over `sub_icon` when set)
-- `sub_icon_color` — template/string color for `sub_icon` (default: main icon color)
-- `sub_icon_color_template` — named color template reference for `sub_icon` (preferred over `sub_icon_color` when set)
-- `sub_icon_size` — size of `sub_icon` relative to main badge size (`1` = same size as main icon area; default `0.5`)
-- `sub_icon_bg` — `true/false`; when `false`, `sub_icon` is shown without circular background (default `true`)
+- `title` — template/string
+- `subtitle` — template/string
+- `badge` — optional small icon in top-right corner (with round background)
+
+### 3) Colors
+
 - `color` — template/string accent color (used for icon/text defaults)
   - supports HA aliases: `primary`, `secondary`, `disabled`, `active`, `inactive`
   - for direct HA vars use CSS syntax, e.g. `var(--primary-color)`
@@ -187,24 +192,33 @@ badges:
   - set `false` / `none` / `0` to make background transparent
 - `background_template` — named color template reference for `background` (preferred over `background` when set)
 - `icon_color` — template/string; icon/text color override (default: same as accent `color`)
-- `border` — border color around badge (template/string, supports palette and HA color aliases). Default: same as icon color
-- `border_size` — border width in px (default `0`, no border)
-- `title` — template/string
+- `sub_icon_color` — template/string color for `sub_icon` (default: main icon color)
+- `sub_icon_color_template` — named color template reference for `sub_icon` (preferred over `sub_icon_color` when set)
 - `title_color` — template/string; overrides title text color when set
-- `subtitle` — template/string
 - `subtitle_color` — template/string; overrides subtitle text color when set
+- `badge_color` — template/string for badge icon color (default: main icon color)
+- `border` — border color around badge (template/string, supports palette and HA color aliases). Default: same as icon color
+
+### 4) Size & layout
+
+- `width` — minimum badge width in relative units (`1` = round badge width, `2` = double width, etc.)
+  - if content is wider, badge still expands to fit content
+  - `none`/`false`/`0` disables explicit min-width
+  - when set, has priority over `align: justified` (badge is not stretched to fill equally)
+- `icon_size` — icon size multiplier (default `1`)
+- `icon_offset` — horizontal icon offset in px (default `0`; positive moves right, negative moves left)
+- `sub_icon_size` — size of `sub_icon` relative to main badge size (`1` = same size as main icon area; default `0.5`)
+- `sub_icon_bg` — `true/false`; when `false`, `sub_icon` is shown without circular background (default `true`)
 - `text_size` — text block size multiplier (default `1`)
 - `text_offset` — horizontal text block offset in px (default `0`; positive moves right, negative moves left)
 - `subtitle_size` — relative subtitle size multiplier vs title balance (default `1`):
   - `1` → title/subtitle are balanced equally
   - `<1` → subtitle gets smaller and title gets proportionally larger (total vertical balance preserved)
   - `>1` → subtitle gets larger and title gets proportionally smaller
-- `width` — minimum badge width in relative units (`1` = round badge width, `2` = double width, etc.)
-  - if content is wider, badge still expands to fit content
-  - `none`/`false`/`0` disables explicit min-width
-  - when set, has priority over `align: justified` (badge is not stretched to fill equally)
-- `badge` — optional small icon in top-right corner (with round background)
-- `badge_color` — template/string for badge icon color (default: main icon color)
+- `border_size` — border width in px (default `0`, no border)
+
+### 5) Actions
+
 - `tap_action` — click action (default: `more-info`)
 - `double_tap_action` — double click action (default: `none`)
   - when `entity` is an array and second entity exists, default becomes `more-info` for `e[1]`
