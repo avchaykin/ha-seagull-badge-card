@@ -13,8 +13,8 @@ class SeagullBadgesCard extends HTMLElement {
           color_template: "royg",
           title: "Phone",
           subtitle: "{{ states(entity) + '%' }}",
-          badge: "mdi:check-circle",
-          badge_color: "#16a34a"
+          sticker: "mdi:check-circle",
+          sticker_color: "#16a34a"
         }
       ]
     };
@@ -348,8 +348,22 @@ class SeagullBadgesCard extends HTMLElement {
     const subIconSize = Number(this._tpl(badge.sub_icon_size, badge, 0.5));
     const subIconBg = this._toBool(this._tpl(badge.sub_icon_bg, badge, true), true);
 
-    const extraIcon = this._tpl(badge.badge ?? badge.extra_icon, badge, "");
-    const extraIconColor = this._normalizeColor(this._tpl(badge.badge_color ?? badge.extra_icon_color, badge, iconColor || "#6b7280"), badge);
+    const stickerIcon = this._tpl(badge.sticker ?? badge.badge ?? badge.extra_icon, badge, "");
+    const stickerText = this._tpl(badge.sticker_text, badge, "");
+    const stickerColor = this._normalizeColor(this._resolveNamedTemplate(
+      "color",
+      badge.sticker_color_template,
+      badge,
+      this._tpl(badge.sticker_color ?? badge.badge_color, badge, iconColor || "#6b7280")
+    ), badge);
+    const stickerIconColor = this._normalizeColor(this._resolveNamedTemplate(
+      "color",
+      badge.sticker_icon_color_template,
+      badge,
+      this._tpl(badge.sticker_icon_color ?? badge.extra_icon_color, badge, this._bestContrastColor(stickerColor))
+    ), badge);
+    const stickerSizeN = Number(this._tpl(badge.sticker_size, badge, 1));
+    const stickerSize = Number.isFinite(stickerSizeN) && stickerSizeN > 0 ? stickerSizeN : 1;
 
     const widthRaw = this._tpl(badge.width, badge, undefined);
     const widthDisabled = widthRaw === undefined
@@ -400,8 +414,11 @@ class SeagullBadgesCard extends HTMLElement {
       subIconBg,
       borderColor,
       borderSize,
-      extraIcon,
-      extraIconColor,
+      stickerIcon,
+      stickerText: this._str(stickerText),
+      stickerColor,
+      stickerIconColor,
+      stickerSize,
       widthUnits,
       tap_action: tapAction,
       double_tap_action: badge.double_tap_action ?? doubleTapDefault,
@@ -632,19 +649,29 @@ class SeagullBadgesCard extends HTMLElement {
         .sg-pill.sg-no-text-icons {
           padding-right: 8px;
         }
-        .sg-extra {
+        .sg-sticker {
           position: absolute;
-          top: 2px;
-          right: 2px;
-          width: 15px;
-          height: 15px;
+          top: calc(var(--sg-badge-h) * 0.1464466);
+          right: calc(var(--sg-badge-h) * 0.1464466);
+          height: calc(15px * var(--sg-sticker-size, 1));
+          min-width: calc(15px * var(--sg-sticker-size, 1));
           border-radius: 9999px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
+          gap: calc(3px * var(--sg-sticker-size, 1));
+          padding: 0 calc(4px * var(--sg-sticker-size, 1));
+          transform: translateY(-50%);
+          box-sizing: border-box;
+          white-space: nowrap;
         }
-        .sg-extra-icon {
-          --mdc-icon-size: 12px;
+        .sg-sticker-icon {
+          --mdc-icon-size: calc(11px * var(--sg-sticker-size, 1));
+        }
+        .sg-sticker-text {
+          font-size: calc(9px * var(--sg-sticker-size, 1));
+          font-weight: 700;
+          line-height: 1;
         }
         .sg-debug {
           margin: 8px;
@@ -688,9 +715,10 @@ class SeagullBadgesCard extends HTMLElement {
         : `<ha-icon class="sg-sub-icon sg-sub-icon-no-bg" data-sg-sub-index="${siIndex}" style="color:${si.color}; --sg-sub-icon-size:${item.subIconSize};" icon="${this._esc(si.icon)}"></ha-icon>`)
       .join("");
 
-    const extraIconHtml = item.extraIcon
-      ? `<span class="sg-extra" style="background:${this._withAlpha(item.extraIconColor, 0.14)};">
-           <ha-icon class="sg-extra-icon" style="color:${item.extraIconColor}" icon="${this._esc(item.extraIcon)}"></ha-icon>
+    const stickerHtml = (item.stickerIcon || item.stickerText)
+      ? `<span class="sg-sticker" style="background:${this._esc(item.stickerColor)};color:${this._esc(item.stickerIconColor)};--sg-sticker-size:${item.stickerSize};">
+           ${item.stickerIcon ? `<ha-icon class="sg-sticker-icon" style="color:${item.stickerIconColor}" icon="${this._esc(item.stickerIcon)}"></ha-icon>` : ""}
+           ${item.stickerText ? `<span class="sg-sticker-text">${this._esc(item.stickerText)}</span>` : ""}
          </span>`
       : "";
 
@@ -704,7 +732,7 @@ class SeagullBadgesCard extends HTMLElement {
       return `
         <div class="sg-item sg-circle ${hasWidthUnits ? "sg-fixed-width" : ""}" data-sg-id="${id}" style="background:${this._withAlpha(item.bgColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.bgColor, 0.22)};--sg-icon-scale:${item.iconSize};--sg-icon-offset-x:${item.iconOffset};border:${item.borderSize}px solid ${this._esc(item.borderColor)}${widthStyle};">
           ${iconHtml}
-          ${extraIconHtml}
+          ${stickerHtml}
         </div>
       `;
     }
@@ -739,7 +767,7 @@ class SeagullBadgesCard extends HTMLElement {
       <div class="${pillClasses}" data-sg-id="${id}" style="background:${this._withAlpha(item.bgColor, 0.14)};--sg-hover-bg:${this._withAlpha(item.bgColor, 0.22)};--sg-icon-scale:${item.iconSize};--sg-icon-offset-x:${item.iconOffset};border:${item.borderSize}px solid ${this._esc(item.borderColor)}${widthStyle};">
         ${iconHtml}
         ${detailsHtml}
-        ${(isExpanded || !canExpand) ? extraIconHtml : ""}
+        ${(isExpanded || !canExpand) ? stickerHtml : ""}
       </div>
     `;
   }
@@ -1308,6 +1336,27 @@ class SeagullBadgesCard extends HTMLElement {
     };
 
     return map[key] || raw;
+  }
+
+  _bestContrastColor(color) {
+    const normalized = this._normalizeColor(color);
+    if (!normalized || typeof normalized !== "string") return "#ffffff";
+
+    if (normalized.startsWith("#")) {
+      const hex = normalized.length === 4
+        ? `#${normalized[1]}${normalized[1]}${normalized[2]}${normalized[2]}${normalized[3]}${normalized[3]}`
+        : normalized;
+      if (hex.length === 7) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+        return yiq >= 140 ? "#111827" : "#ffffff";
+      }
+    }
+
+    // Fallback for CSS vars/functions.
+    return "#ffffff";
   }
 
   _withAlpha(color, alpha) {

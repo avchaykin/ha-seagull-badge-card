@@ -76,7 +76,7 @@ Card-level template registries:
 - `debug` — `true/false`; prints template resolution diagnostics to browser console and shows recent debug lines inside the card
 - `show_all` — `true/false`; when `true`, all badges are shown in dashboard edit mode (ignores per-badge `show*` filters)
 - `placeholder_text` — text shown when no badges are visible; set empty string (`""`) to render nothing
-- `palette` — map of named colors. You can reuse these names in `color`, `sub_icon_color`, `badge_color`, and color templates
+- `palette` — map of named colors. You can reuse these names in `color`, `background`, `sub_icon_color`, `sticker_color`, `sticker_icon_color`, and color templates
 - `padding_y` — top/bottom inner padding of badge row (set `0` for edge-touching layout). Defaults to `padding`.
   - when `padding_y: 0`, row min-height lock is disabled to remove extra top/bottom gaps
 - `expand_time` — expand/collapse animation duration in milliseconds (default `320`)
@@ -180,7 +180,9 @@ badges:
 - `sub_icon_template` — named icon template reference for `sub_icon` (preferred over `sub_icon` when set)
 - `title` — template/string
 - `subtitle` — template/string
-- `badge` — optional small icon in top-right corner (with round background)
+- `sticker` — optional sticker icon in top-right corner
+- `sticker_text` — optional sticker text (sticker expands to the left)
+  - backward compatibility: legacy `badge` / `badge_color` still work
 
 ### 3) Colors
 
@@ -196,7 +198,10 @@ badges:
 - `sub_icon_color_template` — named color template reference for `sub_icon` (preferred over `sub_icon_color` when set)
 - `title_color` — template/string; overrides title text color when set
 - `subtitle_color` — template/string; overrides subtitle text color when set
-- `badge_color` — template/string for badge icon color (default: main icon color)
+- `sticker_color` — template/string sticker background color (default: accent `color`)
+- `sticker_color_template` — named color template reference for sticker background
+- `sticker_icon_color` — template/string sticker icon/text color (default: auto-contrast from `sticker_color`)
+- `sticker_icon_color_template` — named color template reference for sticker icon/text color
 - `border` — border color around badge (template/string, supports palette and HA color aliases). Default: same as icon color
 
 ### 4) Size & layout
@@ -209,6 +214,7 @@ badges:
 - `icon_offset` — horizontal icon offset in px (default `0`; positive moves right, negative moves left)
 - `sub_icon_size` — size of `sub_icon` relative to main badge size (`1` = same size as main icon area; default `0.5`)
 - `sub_icon_bg` — `true/false`; when `false`, `sub_icon` is shown without circular background (default `true`)
+- `sticker_size` — relative sticker size multiplier (default `1`)
 - `text_size` — text block size multiplier (default `1`)
 - `text_offset` — horizontal text block offset in px (default `0`; positive moves right, negative moves left)
 - `subtitle_size` — relative subtitle size multiplier vs title balance (default `1`):
